@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZimWorx | TA Recruitment System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0D1B2A;--teal:#00B4A6;--gold:#F5A623;--cream:#F9F6F1;--slate:#4A5568;--light:#E8F4F3;--red:#E53E3E;--green:#38A169;--border:#D1D9E0;--card:#FFFFFF;--radius:10px;--shadow:0 4px 24px rgba(13,27,42,0.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh;}
+header{background:var(--navy);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,0.3);}
+.logo{font-family:'DM Serif Display',serif;color:var(--teal);font-size:22px;letter-spacing:1px;}
+.logo span{color:var(--gold);}
+.header-sub{color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+.tab-bar{background:var(--navy);padding:0 40px;display:flex;gap:4px;border-top:1px solid rgba(255,255,255,0.06);overflow-x:auto;}
+.tab-btn{background:none;border:none;color:rgba(255,255,255,0.45);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:13px 18px;cursor:pointer;letter-spacing:0.4px;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.tab-btn:hover{color:rgba(255,255,255,0.8);}
+.tab-btn.active{color:var(--teal);border-bottom-color:var(--teal);}
+.page{display:none;}.page.active{display:block;}
+.container{max-width:1200px;margin:0 auto;padding:32px 40px;}
+.page-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--navy);margin-bottom:4px;}
+.page-subtitle{color:var(--slate);font-size:13px;margin-bottom:28px;}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px;overflow:hidden;}
+.card-header{background:var(--navy);padding:14px 22px;display:flex;align-items:center;gap:10px;}
+.card-header h3{font-family:'DM Serif Display',serif;color:#fff;font-size:15px;font-weight:400;}
+.badge{background:var(--teal);color:var(--navy);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.5px;}
+.badge-gold{background:var(--gold)!important;}
+.card-body{padding:22px;}
+.fg{display:grid;gap:16px;margin-bottom:16px;}
+.fg-3{grid-template-columns:repeat(3,1fr);}
+.fg-2{grid-template-columns:repeat(2,1fr);}
+.fg-4{grid-template-columns:repeat(4,1fr);}
+.fg-1{grid-template-columns:1fr;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--slate);}
+.field label .req{color:var(--teal);}
+.field input,.field select,.field textarea{font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;color:var(--navy);background:#fff;transition:border-color 0.2s,box-shadow 0.2s;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,166,0.1);}
+.field textarea{resize:vertical;min-height:75px;}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;}
+.ro-field{background:#f8f8f8!important;color:var(--slate)!important;}
+/* Candidate Picker */
+.cpicker{position:relative;}
+.cpicker-row{display:flex;gap:8px;}
+.cpicker-row input{flex:1;}
+.cdropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--teal);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:50;max-height:220px;overflow-y:auto;display:none;}
+.cdropdown.open{display:block;}
+.coption{padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:background 0.1s;}
+.coption:last-child{border-bottom:none;}
+.coption:hover{background:var(--light);}
+.coption-name{font-weight:500;color:var(--navy);}
+.coption-meta{font-size:11px;color:var(--slate);margin-top:2px;}
+.spill{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;}
+.sp-available{background:#C6F6D5;color:#276749;}
+.sp-consideration{background:#BEE3F8;color:#2A69AC;}
+.sp-placed{background:#C6F6D5;color:#22543D;}
+.sp-blacklisted{background:#FED7D7;color:#9B2C2C;}
+.ctags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.ctag{background:var(--light);border:1px solid var(--teal);color:var(--navy);font-size:12px;padding:4px 10px;border-radius:16px;display:flex;align-items:center;gap:6px;}
+.ctag-x{cursor:pointer;color:var(--slate);font-size:15px;line-height:1;}
+.ctag-x:hover{color:var(--red);}
+.no-res{padding:14px;text-align:center;color:var(--slate);font-size:13px;}
+/* Buttons */
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;}
+.btn-primary{background:var(--teal);color:var(--navy);}
+.btn-primary:hover{background:#009e91;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,180,166,0.25);}
+.btn-secondary{background:transparent;color:var(--slate);border:1.5px solid var(--border);}
+.btn-secondary:hover{border-color:var(--slate);color:var(--navy);}
+.btn-danger{background:#FFF5F5;color:var(--red);border:1.5px solid #FED7D7;}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover{background:#e09400;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;padding-top:18px;border-top:1px solid var(--border);margin-top:6px;}
+/* Table */
+.tbl-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.sbox{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:8px 13px;flex:1;max-width:300px;}
+.sbox input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--navy);width:100%;background:transparent;}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{background:var(--cream);text-transform:uppercase;letter-spacing:0.4px;font-size:10px;font-weight:700;color:var(--slate);padding:9px 13px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;}
+.tbl td{padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl tr:hover td{background:var(--light);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl-acts{display:flex;gap:6px;}
+.tbtn{padding:4px 9px;border-radius:5px;font-size:11px;border:1.5px solid;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:all 0.15s;}
+.tbtn-e{border-color:var(--teal);color:var(--teal);background:transparent;}
+.tbtn-e:hover{background:var(--teal);color:#fff;}
+.tbtn-d{border-color:var(--red);color:var(--red);background:transparent;}
+.tbtn-d:hover{background:var(--red);color:#fff;}
+.sbadge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.s-Closed{background:#C6F6D5;color:#276749;}
+.s-Open{background:#BEE3F8;color:#2A69AC;}
+.s-Lost{background:#FED7D7;color:#9B2C2C;}
+.s-OnHold{background:#FEEBC8;color:#7B341E;}
+.pag{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:12px;color:var(--slate);}
+.pag-btns{display:flex;gap:4px;}
+.pbtn{padding:5px 11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.pbtn:hover,.pbtn.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+.es{text-align:center;padding:44px;color:var(--slate);}
+.es .ei{font-size:44px;margin-bottom:10px;}
+/* Location grid */
+.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px;}
+.loc-row{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;transition:border-color 0.2s,background 0.2s;}
+.loc-row.active{border-color:var(--teal);background:var(--light);}
+.loc-check{display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;}
+.loc-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+.loc-name{font-size:13px;font-weight:500;color:var(--navy);}
+.loc-seats{width:80px;font-family:"DM Sans",sans-serif;font-size:13px;padding:5px 8px;border:1.5px solid var(--teal);border-radius:6px;color:var(--navy);background:#fff;text-align:center;}
+.loc-seats:focus{outline:none;box-shadow:0 0 0 3px rgba(0,180,166,0.12);}
+/* Co-recruiter pill in table */
+.co-pill{display:inline-block;font-size:10px;background:#EDF2F7;color:var(--slate);padding:2px 7px;border-radius:10px;margin-left:4px;font-weight:600;}
+/* Placement modal */
+.placement-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#F0FFF4;border:1px solid #68D391;border-radius:8px;margin-bottom:8px;}
+.placement-cand{font-weight:600;font-size:13px;color:var(--navy);}
+.placement-sel{font-family:"DM Sans",sans-serif;font-size:12px;padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:#fff;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+.placed-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;background:#C6F6D5;color:#276749;padding:3px 10px;border-radius:12px;font-weight:600;}
+/* Training checkboxes */
+.training-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+.train-check{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:13px;transition:border-color 0.2s,background 0.2s;}
+.train-check:hover{border-color:var(--teal);background:var(--light);}
+.train-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+.train-check span{color:var(--navy);font-weight:500;line-height:1.3;}
+.train-check input:checked ~ span{color:var(--teal);}
+/* Coaching eligibility + readiness styles */
+.ready-badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700;}
+.rb-ready{background:#C6F6D5;color:#276749;}
+.rb-notready{background:#FEEBC8;color:#7B341E;}
+.rb-offload{background:#FED7D7;color:#9B2C2C;}
+.rb-interviewing{background:#BEE3F8;color:#2A69AC;}
+.rb-complete{background:#E9D8FD;color:#553C9A;}
+.rb-retrain{background:#FEEBC8;color:#7B341E;}
+/* Placement ID badge */
+.pid-badge{display:inline-block;font-family:monospace;font-size:11px;background:#1A2535;color:var(--teal);padding:3px 10px;border-radius:6px;font-weight:700;letter-spacing:1px;}
+/* Flagged status */
+.st-flagged{background-color:#FFFFF0;border-color:#D69E2E;color:#744210;}
+.sp-flagged{background:#FEFCBF;color:#744210;}
+.pool-stats .pstat.flagged-highlight{border:2px solid var(--gold);}
+/* SLA indicator */
+.sla-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:8px;background:#fff;border:1px solid var(--border);}
+.sla-label{font-size:12px;color:var(--navy);flex:1;}
+.sla-val{font-size:14px;font-weight:700;min-width:40px;text-align:right;}
+.sla-target{font-size:11px;color:var(--slate);min-width:80px;text-align:right;}
+.sla-bar{width:80px;height:8px;background:var(--cream);border-radius:4px;overflow:hidden;}
+.sla-fill{height:100%;border-radius:4px;}
+.sla-green .sla-val{color:var(--green);}
+.sla-amber .sla-val{color:#D97706;}
+.sla-red .sla-val{color:var(--red);}
+.sla-green .sla-fill{background:var(--green);}
+.sla-amber .sla-fill{background:#F6AD55;}
+.sla-red .sla-fill{background:var(--red);}
+@media(max-width:900px){.training-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.training-grid{grid-template-columns:1fr;}}
+/* Analytics */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.sc{background:#fff;border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
+.sc.ct::after{background:var(--teal);}
+.sc.cg::after{background:var(--gold);}
+.sc.cgr::after{background:var(--green);}
+.sc.cr::after{background:var(--red);}
+.sl{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate);font-weight:700;margin-bottom:6px;}
+.sv{font-family:'DM Serif Display',serif;font-size:30px;color:var(--navy);line-height:1;margin-bottom:2px;}
+.ss{font-size:11px;color:var(--slate);}
+.filters-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:22px;box-shadow:var(--shadow);}
+.filters-row .field input,.filters-row .field select{font-size:13px;padding:8px 11px;}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.cwrap{background:#fff;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px 22px;}
+.ctitle{font-family:'DM Serif Display',serif;font-size:15px;color:var(--navy);margin-bottom:4px;}
+.csub{font-size:11px;color:var(--slate);margin-bottom:14px;}
+.bchart{display:flex;flex-direction:column;gap:9px;}
+.brow{display:flex;align-items:center;gap:10px;}
+.blabel{font-size:11px;color:var(--slate);min-width:100px;text-align:right;}
+.btrack{flex:1;background:var(--cream);border-radius:4px;height:22px;overflow:hidden;}
+.bfill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:7px;font-size:11px;font-weight:700;color:var(--navy);min-width:28px;transition:width 0.5s ease;}
+.bt{background:var(--teal);}
+.bg{background:var(--gold);}
+.bn{background:var(--navy);color:#fff;}
+.bgr{background:#68D391;}
+.bp{background:#9F7AEA;}
+.mlist{display:flex;flex-direction:column;gap:11px;}
+.mrow{display:flex;align-items:center;justify-content:space-between;}
+.mname{font-size:12px;color:var(--navy);}
+.mright{display:flex;align-items:center;gap:10px;}
+.mcnt{font-weight:700;font-size:13px;min-width:28px;text-align:right;}
+.mbar{width:90px;height:7px;background:var(--cream);border-radius:4px;overflow:hidden;}
+.mbar-fill{height:100%;border-radius:4px;}
+.kpi{background:linear-gradient(135deg,var(--navy) 0%,#1a3553 100%);color:#fff;border-radius:var(--radius);padding:22px 28px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.kpi-item{text-align:center;}
+.kpi-n{font-family:'DM Serif Display',serif;font-size:36px;color:var(--teal);line-height:1;}
+.kpi-d{font-size:11px;color:rgba(255,255,255,0.55);margin-top:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.kpi-div{width:1px;height:56px;background:rgba(255,255,255,0.1);}
+/* Candidate Pool */
+.cgrid-pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.ccard{background:#fff;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:box-shadow 0.2s;}
+.ccard:hover{box-shadow:0 6px 28px rgba(13,27,42,0.12);}
+.ccard-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);}
+.ccard-info{font-size:12px;color:var(--slate);}
+.ccard-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.ccard-acts{display:flex;gap:6px;margin-top:6px;}
+.ccard-deals{font-size:11px;color:var(--slate);}
+.ccard-note{font-size:11px;color:var(--slate);font-style:italic;}
+.ssel{font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:600;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+.ssel.st-available{background-color:#F0FFF4;border-color:#68D391;color:#276749;}
+.ssel.st-consideration{background-color:#EBF8FF;border-color:#63B3ED;color:#2A69AC;}
+.ssel.st-placed{background-color:#F0FFF4;border-color:#38A169;color:#22543D;}
+.ssel.st-blacklisted{background-color:#FFF5F5;border-color:#FC8181;color:#9B2C2C;}
+.pool-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.pstat{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:center;box-shadow:var(--shadow);}
+.pstat-n{font-family:'DM Serif Display',serif;font-size:26px;color:var(--navy);}
+.pstat-l{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.cfbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.cfbar input,.cfbar select{font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fff;color:var(--navy);}
+.cfbar select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.cfbar input:focus,.cfbar select:focus{outline:none;border-color:var(--teal);}
+/* Toggle */
+.togrow{display:flex;gap:6px;margin-bottom:18px;}
+.togbtn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:7px 16px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;background:#fff;color:var(--slate);transition:all 0.2s;}
+.togbtn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+/* Modal */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(13,27,42,0.6);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.moverlay.open{display:flex;}
+.modal{background:#fff;border-radius:14px;padding:28px;width:90%;max-width:500px;box-shadow:0 20px 80px rgba(0,0,0,0.25);animation:mIn 0.22s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes mIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h3{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;}
+.modal p{color:var(--slate);font-size:13px;margin-bottom:18px;}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+.wicon{font-size:38px;text-align:center;margin-bottom:12px;}
+.wcands{background:#FFFBEB;border:1px solid #F6E05E;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:13px;}
+.wrow{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F6E05E;}
+.wrow:last-child{border-bottom:none;}
+/* Toast */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 32px rgba(0,0,0,0.25);transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;max-width:340px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:4px solid var(--teal);}
+.toast.error{border-left:4px solid var(--red);}
+.toast.warning{border-left:4px solid var(--gold);}
+@media(max-width:900px){.container{padding:18px;}.fg-3,.fg-4{grid-template-columns:1fr 1fr;}.stats-grid,.pool-stats{grid-template-columns:1fr 1fr;}.cgrid{grid-template-columns:1fr;}.filters-row{grid-template-columns:1fr 1fr;}.kpi{flex-direction:column;text-align:center;}.kpi-div{width:60px;height:1px;}}
+@media(max-width:600px){.fg-3,.fg-4,.fg-2{grid-template-columns:1fr;}.stats-grid,.pool-stats{grid-template-columns:1fr;}.filters-row{grid-template-columns:1fr;}header{padding:0 16px;}.tab-bar{padding:0 16px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div><div class="logo">Zim<span>Worx</span></div><div class="header-sub">Talent Acquisition System</div></div>
+  <div style="color:rgba(255,255,255,0.3);font-size:12px;" id="hDate"></div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('ta',this)">📋 TA Log</button>
+  <button class="tab-btn" onclick="switchTab('candidates',this)">👥 Candidate Pool</button>
+  <button class="tab-btn" onclick="switchTab('coaching',this)">🎯 Interview Coaching</button>
+  <button class="tab-btn" onclick="switchTab('analytics',this)">📊 Analytics</button>
+</div>
+
+<!-- ════ TA LOG ════ -->
+<div id="page-ta" class="page active">
+<div class="container">
+<div class="page-title">Recruitment Activity Log</div>
+<div class="page-subtitle">Log new recruitment activities and manage the full TA pipeline</div>
+
+<div class="card">
+  <div class="card-header"><h3>New Entry</h3><span class="badge" id="fMode">ADD RECORD</span></div>
+  <div class="card-body">
+    <div class="fg fg-2">
+      <div class="field"><label>Deal / Opportunity <span class="req">*</span></label><input type="text" id="f-deal" placeholder="e.g. DoFI, Dental Coordinator"></div>
+      <div class="field"><label>Client <span class="req">*</span></label><input type="text" id="f-client" placeholder="Client practice or company name"></div>
+    </div>
+
+    <!-- LOCATION + SEATS -->
+    <div class="fg fg-1">
+      <div class="field">
+        <label>Locations &amp; Seats <span class="req">*</span> <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate);">— tick all that apply, then enter seats per location</span></label>
+        <div class="loc-grid" id="locGrid">
+          <div class="loc-row" id="loc-Zimbabwe"><label class="loc-check"><input type="checkbox" value="Zimbabwe" onchange="toggleSeat(this)"><span class="loc-name">Zimbabwe</span></label><input type="number" class="loc-seats" id="seats-Zimbabwe" min="1" placeholder="Seats" style="display:none;" oninput="updateTotalSeats()"></div>
+          <div class="loc-row" id="loc-Zambia"><label class="loc-check"><input type="checkbox" value="Zambia" onchange="toggleSeat(this)"><span class="loc-name">Zambia</span></label><input type="number" class="loc-seats" id="seats-Zambia" min="1" placeholder="Seats" style="display:none;" oninput="updateTotalSeats()"></div>
+          <div class="loc-row" id="loc-CostaRica"><label class="loc-check"><input type="checkbox" value="Costa Rica" onchange="toggleSeat(this)"><span class="loc-name">Costa Rica</span></label><input type="number" class="loc-seats" id="seats-CostaRica" min="1" placeholder="Seats" style="display:none;" oninput="updateTotalSeats()"></div>
+          <div class="loc-row" id="loc-VictoriaFalls"><label class="loc-check"><input type="checkbox" value="Victoria Falls" onchange="toggleSeat(this)"><span class="loc-name">Victoria Falls</span></label><input type="number" class="loc-seats" id="seats-VictoriaFalls" min="1" placeholder="Seats" style="display:none;" oninput="updateTotalSeats()"></div>
+        </div>
+        <div id="totalSeatsDisplay" style="display:none;margin-top:8px;font-size:12px;font-weight:600;color:var(--teal);"></div>
+      </div>
+    </div>
+
+    <div class="fg fg-3">
+      <div class="field"><label>Recruiter (RIC) <span class="req">*</span></label><select id="f-ric"><option value="">Select</option><option>Audrey</option><option>Chamaine</option><option>Tevin</option><option>Sean</option><option>Nicola</option><option>Andrea</option><option>Monje</option><option>Victoria</option><option>Fiona</option><option>Nalishebo</option><option>Melissa</option><option>Stephanie</option><option>Angie</option></select></div>
+      <div class="field">
+        <label>Co-Recruiter <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate);">— if shared deal</span></label>
+        <select id="f-coric"><option value="">None</option><option>Audrey</option><option>Chamaine</option><option>Tevin</option><option>Sean</option><option>Nicola</option><option>Andrea</option><option>Monje</option><option>Victoria</option><option>Fiona</option><option>Nalishebo</option><option>Melissa</option><option>Stephanie</option><option>Angie</option></select>
+      </div>
+      <div class="field"><label>Job Type <span class="req">*</span></label><select id="f-jobtype"><option value="">Select</option><option>Dental</option><option>RCM</option><option>Client Facing</option><option>Internal</option></select></div>
+    </div>
+    <div class="fg fg-3">
+      <div class="field"><label>Status <span class="req">*</span></label><select id="f-status" onchange="onStatusChange(this)"><option value="">Select</option><option>Open</option><option>Closed</option><option>Lost</option><option>On Hold</option></select></div>
+      <div class="field"><label>Selection Phase</label><select id="f-phase"><option value="">Select</option><option>Sourcing candidates</option><option>Waiting for interview date</option><option>Interviewing</option><option>Pending - Client Delay</option><option>Pending</option><option>Sourcing more</option><option>On hold</option><option>Closed job</option><option>Lost</option></select></div>
+      <div class="field"><label>Sales Person</label><select id="f-sales"><option value="">Select</option><option>Sani</option><option>Laura</option><option>Nicole</option><option>Tapiwa</option><option>Peyton</option><option>Edwin</option><option>Payden</option><option>Adam</option><option>Amy</option><option>Nyasha</option><option>Rob</option><option>Gina</option></select></div>
+    </div>
+
+    <!-- CANDIDATE PICKER -->
+    <div class="fg fg-1">
+      <div class="field">
+        <label>Candidates on this Deal <span style="font-weight:400;text-transform:none;color:var(--slate);letter-spacing:0"> — search pool or add new</span></label>
+        <div class="cpicker" id="cpicker">
+          <div class="cpicker-row">
+            <input type="text" id="csearch" placeholder="Type a name to search the candidate pool…" autocomplete="off" oninput="searchCands()" onfocus="searchCands()">
+            <button class="btn btn-secondary btn-sm" type="button" onclick="openQuickAdd()">+ New Candidate</button>
+          </div>
+          <div class="cdropdown" id="cdropdown"></div>
+          <div class="ctags" id="ctags"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fg fg-4">
+      <div class="field"><label>Date Requested <span class="req">*</span></label><input type="date" id="f-datereq"></div>
+      <div class="field"><label>Date CVs Shared</label><input type="date" id="f-datecvs"></div>
+      <div class="field"><label>Interview Date</label><input type="date" id="f-dateintv"></div>
+      <div class="field"><label>Date Hired</label><input type="date" id="f-datehired"></div>
+    </div>
+
+    <div class="card-header" style="margin:0 -22px 16px;border-radius:0;"><h3>Pipeline Metrics</h3><span class="badge badge-gold">AUTO-CALCULATED WHERE POSSIBLE</span></div>
+    <div class="fg fg-4">
+      <div class="field"><label>CVs Funneled</label><input type="number" id="f-cvf" min="0" placeholder="0"></div>
+      <div class="field"><label>Pre-screened</label><input type="number" id="f-scr" min="0" placeholder="0"></div>
+      <div class="field"><label>Candidates Interviewed</label><input type="number" id="f-intv" min="0" placeholder="0"></div>
+      <div class="field"><label>Candidates Coached</label><input type="number" id="f-cch" min="0" placeholder="0"></div>
+    </div>
+    <div class="fg fg-4">
+      <div class="field"><label>Interviews Conducted</label><input type="number" id="f-ic" min="0" placeholder="0"></div>
+      <div class="field"><label>Client Interviewed</label><input type="number" id="f-ci" min="0" placeholder="0"></div>
+      <div class="field"><label>Positions Filled</label><input type="number" id="f-pf" min="0" placeholder="0"></div>
+      <div class="field"><label>Candidates Employed</label><input type="number" id="f-ce" min="0" placeholder="0"></div>
+    </div>
+    <div class="fg fg-4">
+      <div class="field"><label>Number of Calls</label><input type="number" id="f-nc" min="0" placeholder="0"></div>
+      <div class="field"><label>Interview Hours</label><input type="number" id="f-ih" min="0" step="0.5" placeholder="0"></div>
+      <div class="field"><label>WD to Share CVs</label><input type="number" id="f-wdc" class="ro-field" placeholder="Auto" readonly></div>
+      <div class="field"><label>WD to Hire</label><input type="number" id="f-wdh" class="ro-field" placeholder="Auto" readonly></div>
+    </div>
+    <div class="fg fg-2">
+      <div class="field"><label>Date Placed on Hold</label><input type="date" id="f-hold"></div>
+      <div class="field"><label>Comments</label><input type="text" id="f-cmt" placeholder="Additional notes"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="clearTA()">Clear Form</button>
+      <button class="btn btn-primary" onclick="saveTA()">Save Record</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3>All Records</h3><span class="badge" id="taCount">0 records</span></div>
+  <div class="card-body">
+    <div class="tbl-controls">
+      <div class="sbox"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search…" id="taQ" oninput="renderTA()"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="fSt" onchange="renderTA()" style="font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fff;"><option value="">All Statuses</option><option>Open</option><option>Closed</option><option>Lost</option><option>On Hold</option></select>
+        <select id="fJt" onchange="renderTA()" style="font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fff;"><option value="">All Job Types</option><option>Dental</option><option>RCM</option><option>Client Facing</option><option>Internal</option></select>
+        <button class="btn btn-gold btn-sm" onclick="exportCSV('ta')">⬇ Export</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Deal</th><th>Client</th><th>Locations (Seats)</th><th>Recruiter(s)</th><th>Type</th><th>Status</th><th>Date Req</th><th>Date CVs</th><th>WD CVs</th><th>WD Hire</th><th>Total Seats</th><th>Placements</th><th>Actions</th></tr></thead><tbody id="taBody"></tbody></table></div>
+    <div class="pag"><span id="taPi"></span><div class="pag-btns" id="taPb"></div></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ════ CANDIDATE POOL ════ -->
+<div id="page-candidates" class="page">
+<div class="container">
+<div class="page-title">Candidate Pool</div>
+<div class="page-subtitle">Central talent database — track availability, placement status, and deal history</div>
+<div class="pool-stats" id="pstats"></div>
+<div class="card">
+  <div class="card-header"><h3>Add / Edit Candidate</h3><span class="badge" id="cpMode">ADD</span></div>
+  <div class="card-body">
+    <div class="fg fg-4">
+      <div class="field"><label>First Name <span class="req">*</span></label><input type="text" id="cp-fn" placeholder="First name"></div>
+      <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" id="cp-ln" placeholder="Last name"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="cp-em" placeholder="candidate@email.com"></div>
+      <div class="field"><label>Phone Number</label><input type="tel" id="cp-ph" placeholder="+263 / +260…"></div>
+    </div>
+    <div class="fg fg-4">
+      <div class="field"><label>Job Category</label><select id="cp-cat"><option value="">Select</option><option>Dental</option><option>RCM</option><option>Sales & Marketing</option><option>Business Development</option><option>Finance and Accounting</option><option>Customer Service</option><option>IT and Computer Science</option><option>Other</option></select></div>
+      <div class="field"><label>Job Level</label><select id="cp-lv"><option value="">Select</option><option>Entry Level</option><option>Middle</option><option>Senior</option></select></div>
+      <div class="field"><label>Country / Region</label><select id="cp-rg"><option value="">Select</option><option>Zimbabwe</option><option>Zambia</option><option>Costa Rica</option></select></div>
+      <div class="field"><label>Status <span class="req">*</span></label><select id="cp-st"><option value="">Select status</option><option value="available">Available</option><option value="consideration">In Consideration</option><option value="placed">Placed</option><option value="blacklisted">Blacklisted</option></select></div>
+    </div>
+    <div class="fg fg-1">
+      <div class="field">
+        <label>ZimWorx Training Completed <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate);"> — tick all that apply</span></label>
+        <div class="training-grid">
+          <label class="train-check"><input type="checkbox" id="tr-dental"><span>Dental Training Passed</span></label>
+          <label class="train-check"><input type="checkbox" id="tr-foundation"><span>Foundational Training Completed</span></label>
+          <label class="train-check"><input type="checkbox" id="tr-ea"><span>Executive EA Training Completed</span></label>
+          <label class="train-check"><input type="checkbox" id="tr-rcm"><span>RCM Training Completed</span></label>
+          <label class="train-check"><input type="checkbox" id="tr-it"><span>IT Support Training Completed</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="fg fg-1"><div class="field"><label>Notes</label><textarea id="cp-nt" placeholder="Any relevant notes about this candidate…"></textarea></div></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="clearCP()">Clear</button>
+      <button class="btn btn-primary" onclick="saveCP()">Save Candidate</button>
+    </div>
+  </div>
+</div>
+
+<div class="cfbar">
+  <div class="sbox" style="max-width:260px;"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search candidates…" id="cpQ" oninput="renderPool()"></div>
+  <select id="cpSf" onchange="renderPool()"><option value="">All Statuses</option><option value="available">Available</option><option value="consideration">In Consideration</option><option value="placed">Placed</option><option value="blacklisted">Blacklisted</option><option value="flagged">Flagged for Review</option></select>
+  <select id="cpCf" onchange="renderPool()"><option value="">All Categories</option><option>Dental</option><option>RCM</option><option>Sales & Marketing</option><option>Business Development</option><option>Finance and Accounting</option><option>Customer Service</option><option>IT and Computer Science</option><option>Other</option></select>
+  <select id="cpRf" onchange="renderPool()"><option value="">All Regions</option><option>Zimbabwe</option><option>Zambia</option><option>Costa Rica</option></select>
+  <button class="btn btn-gold btn-sm" onclick="exportCSV('candidates')">⬇ Export</button>
+</div>
+<div class="cgrid-pool" id="poolGrid"></div>
+<div class="pag" style="margin-top:8px;"><span id="ppI"></span><div class="pag-btns" id="ppB"></div></div>
+</div>
+</div>
+
+<!-- ════ COACHING ════ -->
+<div id="page-coaching" class="page">
+<div class="container">
+<div class="page-title">Interview Coaching Tracker</div>
+<div class="page-subtitle">Coaching records are required before a candidate can be sent to a client interview. Target: 95% first-round placement rate.</div>
+
+<!-- COACHING KPIs -->
+<div class="pool-stats" id="coachKpis" style="margin-bottom:20px;"></div>
+
+<div class="togrow">
+  <button class="togbtn active" onclick="togCoach('form',this)">Log Session</button>
+  <button class="togbtn" onclick="togCoach('records',this)">All Records</button>
+  <button class="togbtn" onclick="togCoach('eligible',this)">Interview Eligible</button>
+</div>
+
+<div id="cFormW">
+  <div class="card">
+    <div class="card-header"><h3>Coaching Session Entry</h3><span class="badge" id="cMode">ADD</span></div>
+    <div class="card-body">
+      <!-- Candidate link -->
+      <div class="fg fg-1" style="margin-bottom:16px;">
+        <div class="field">
+          <label>Link to Candidate Pool <span class="req">*</span> <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate);"> — search pool or type name</span></label>
+          <div class="cpicker" id="coachCpicker">
+            <input type="text" id="c-candSearch" placeholder="Type candidate name…" autocomplete="off" oninput="searchCoachCands()" onfocus="searchCoachCands()">
+            <div class="cdropdown" id="coachCdropdown"></div>
+            <div id="c-candLinked" style="margin-top:8px;"></div>
+          </div>
+          <input type="hidden" id="c-candId">
+        </div>
+      </div>
+      <div class="fg fg-3">
+        <div class="field"><label>Session Date <span class="req">*</span></label><input type="date" id="c-dt"></div>
+        <div class="field"><label>Coaching Class / Cohort</label><input type="text" id="c-cl" placeholder="e.g. 2nd Class, Jun, 2025"></div>
+        <div class="field"><label>Attended Session?</label><select id="c-at"><option value="">Select</option><option>Yes</option><option>No</option></select></div>
+      </div>
+      <div class="fg fg-3">
+        <div class="field"><label>Broad Job Category <span class="req">*</span></label>
+          <select id="c-jc">
+            <option value="">Select</option>
+            <option value="Clinical &amp; Dental">Clinical &amp; Dental (Dentists, Hygienists, Assistants)</option>
+            <option value="Revenue Cycle Management">Revenue Cycle Management (Billing, Coding, Claims)</option>
+            <option value="Client Facing &amp; Admin">Client Facing &amp; Admin (Coordinators, Receptionists, EA)</option>
+            <option value="Sales &amp; Business Development">Sales &amp; Business Development</option>
+            <option value="Finance &amp; Accounting">Finance &amp; Accounting</option>
+            <option value="Technology &amp; IT">Technology &amp; IT</option>
+            <option value="Operations &amp; Management">Operations &amp; Management</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Job Level</label><select id="c-jl"><option value="">Select</option><option>Entry Level</option><option>Middle</option><option>Senior</option></select></div>
+        <div class="field"><label>Region <span class="req">*</span></label><select id="c-rg"><option value="">Select</option><option>Zimbabwe</option><option>Zambia</option><option>Costa Rica</option><option>Victoria Falls</option></select></div>
+      </div>
+      <!-- Assessment Scores -->
+      <div class="card-header" style="margin:0 -22px 16px;border-radius:0;"><h3>Assessment Scores</h3><span class="badge badge-gold">ENTERED MANUALLY BY COACH</span></div>
+      <div class="fg fg-4">
+        <div class="field">
+          <label>Predictive Index Score</label>
+          <input type="text" id="c-pi" placeholder="e.g. Promoter, Controller…">
+          <span style="font-size:11px;color:var(--slate);margin-top:3px;">PI behavioural profile type</span>
+        </div>
+        <div class="field">
+          <label>PI Reference Score</label>
+          <input type="number" id="c-pisc" min="0" max="100" placeholder="0–100">
+          <span style="font-size:11px;color:var(--slate);margin-top:3px;">Numeric PI score if applicable</span>
+        </div>
+        <div class="field">
+          <label>Core Competency Score (%)</label>
+          <input type="number" id="c-cc" min="0" max="100" placeholder="0–100">
+          <span style="font-size:11px;color:var(--slate);margin-top:3px;">TestGorilla score</span>
+        </div>
+        <div class="field">
+          <label>Date of Last Coaching</label>
+          <input type="date" id="c-lc">
+        </div>
+      </div>
+      <!-- Readiness + Interview Status -->
+      <div class="fg fg-3">
+        <div class="field">
+          <label>Readiness Status <span class="req">*</span></label>
+          <select id="c-rs" onchange="onReadinessChange(this)">
+            <option value="">Select</option>
+            <option value="Ready for Interview">Ready for Interview</option>
+            <option value="Not Yet Ready">Not Yet Ready — Needs Retraining</option>
+            <option value="Offload">Offload — Release from Programme</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Interview Status</label>
+          <select id="c-is" onchange="onIntvStatusChange(this)">
+            <option value="">Select</option>
+            <option value="Ready for Interview">Ready for Interview</option>
+            <option value="Interviewing">Interviewing</option>
+            <option value="Interview Complete">Interview Complete</option>
+            <option value="Retrain">Retrain</option>
+            <option value="Offload">Offload</option>
+          </select>
+        </div>
+        <div class="field"><label>Candidate Selected / Placed?</label><select id="c-cs"><option value="">Select</option><option>Yes — Placed</option><option>No — Not Selected</option><option>No — Returned to Pool</option></select></div>
+      </div>
+      <div class="fg fg-2">
+        <div class="field"><label>Date of First Interview</label><input type="date" id="c-fi"></div>
+        <div class="field"><label>Latest Interview Round</label><input type="text" id="c-lr" placeholder="e.g. Round 1, Round 2"></div>
+      </div>
+      <div class="fg fg-2">
+        <div class="field"><label>Client Rejection Reason</label><input type="text" id="c-rj" placeholder="If candidate was not selected"></div>
+        <div class="field"><label>Action Taken</label><input type="text" id="c-ac" placeholder="Next steps"></div>
+      </div>
+      <div class="fg fg-1"><div class="field"><label>Comments</label><textarea id="c-co" placeholder="Additional coaching notes…"></textarea></div></div>
+      <div id="offloadWarning" style="display:none;background:#FFF5F5;border:1.5px solid #FC8181;border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:13px;color:#9B2C2C;">
+        ⚠️ <strong>Offload selected.</strong> Saving this record will flag this candidate for manual review in the pool. The recruiter will need to decide whether to retain, blacklist, or release them.
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="clearC()">Clear</button>
+        <button class="btn btn-primary" onclick="saveC()">Save Entry</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cTblW" style="display:none;">
+  <div class="card">
+    <div class="card-header"><h3>All Coaching Records</h3><span class="badge" id="cCount">0</span></div>
+    <div class="card-body">
+      <div class="tbl-controls">
+        <div class="sbox"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search…" id="cQ" oninput="renderC()"></div>
+        <select id="cFilt" onchange="renderC()" style="font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fff;">
+          <option value="">All Statuses</option>
+          <option value="Ready for Interview">Ready for Interview</option>
+          <option value="Interviewing">Interviewing</option>
+          <option value="Interview Complete">Interview Complete</option>
+          <option value="Retrain">Retrain</option>
+          <option value="Offload">Offload</option>
+        </select>
+        <button class="btn btn-gold btn-sm" onclick="exportCSV('coaching')">⬇ Export</button>
+      </div>
+      <div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Date</th><th>Candidate</th><th>Category</th><th>Region</th><th>PI Score</th><th>Core Comp %</th><th>Readiness</th><th>Intv Status</th><th>Selected?</th><th>Actions</th></tr></thead><tbody id="cBody"></tbody></table></div>
+      <div class="pag"><span id="cPi"></span><div class="pag-btns" id="cPb"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="cEligW" style="display:none;">
+  <div class="card">
+    <div class="card-header"><h3>Interview-Eligible Candidates</h3><span class="badge badge-gold" id="eligCount">0</span></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--slate);margin-bottom:16px;">These candidates have completed coaching and are cleared for client interviews. Only candidates with a coaching record marked <strong>Ready for Interview</strong> appear here.</p>
+      <div class="cgrid-pool" id="eligGrid"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ════ ANALYTICS ════ -->
+<div id="page-analytics" class="page">
+<div class="container">
+<div class="page-title">Analytics Dashboard</div>
+<div class="page-subtitle">Recruitment performance metrics, pipeline insights, and time-to-hire reporting</div>
+<div class="filters-row">
+  <div class="field"><label>Date From</label><input type="date" id="af" onchange="renderAn()"></div>
+  <div class="field"><label>Date To</label><input type="date" id="at" onchange="renderAn()"></div>
+  <div class="field"><label>Recruiter</label><select id="ar" onchange="renderAn()"><option value="">All</option><option>Audrey</option><option>Chamaine</option><option>Tevin</option><option>Sean</option><option>Nicola</option><option>Andrea</option><option>Monje</option><option>Victoria</option><option>Fiona</option><option>Nalishebo</option><option>Melissa</option><option>Stephanie</option><option>Angie</option></select></div>
+  <div class="field"><label>Job Function</label><select id="aj" onchange="renderAn()"><option value="">All</option><option>Dental</option><option>RCM</option><option>Client Facing</option><option>Internal</option></select></div>
+  <div class="field"><label>Country</label><select id="ac" onchange="renderAn()"><option value="">All</option><option>Zimbabwe</option><option>Zambia</option><option>Costa Rica</option><option>Victoria Falls</option></select></div>
+</div>
+<div class="kpi">
+  <div class="kpi-item"><div class="kpi-n" id="k-tts">—</div><div class="kpi-d">Avg Days — Share CVs</div></div>
+  <div class="kpi-div"></div>
+  <div class="kpi-item"><div class="kpi-n" id="k-tth">—</div><div class="kpi-d">Avg Time to Hire</div></div>
+  <div class="kpi-div"></div>
+  <div class="kpi-item"><div class="kpi-n" id="k-cl">—</div><div class="kpi-d">Roles Closed</div></div>
+  <div class="kpi-div"></div>
+  <div class="kpi-item"><div class="kpi-n" id="k-fr">—</div><div class="kpi-d">Fill Rate</div></div>
+  <div class="kpi-div"></div>
+  <div class="kpi-item"><div class="kpi-n" id="k-pl">—</div><div class="kpi-d">Candidate Pool</div></div>
+</div>
+<div class="stats-grid">
+  <div class="sc ct"><div class="sl">Open Roles</div><div class="sv" id="s-op">0</div><div class="ss">Currently active</div></div>
+  <div class="sc cg"><div class="sl">Positions Filled</div><div class="sv" id="s-fl">0</div><div class="ss">Successfully placed</div></div>
+  <div class="sc cgr"><div class="sl">Pre-screened</div><div class="sv" id="s-sc">0</div><div class="ss">Candidates reviewed</div></div>
+  <div class="sc cr"><div class="sl">Lost / On Hold</div><div class="sv" id="s-lo">0</div><div class="ss">Roles not filled</div></div>
+</div>
+<div class="cgrid">
+  <div class="cwrap"><div class="ctitle">Roles by Job Function</div><div class="csub">Distribution across all job types</div><div class="bchart" id="ch-jt"></div></div>
+  <div class="cwrap"><div class="ctitle">Roles by Country</div><div class="csub">Geographic spread</div><div class="bchart" id="ch-ct"></div></div>
+</div>
+<div class="cgrid">
+  <div class="cwrap"><div class="ctitle">Status Breakdown</div><div class="csub">Pipeline distribution</div><div class="mlist" id="ch-st"></div></div>
+  <div class="cwrap"><div class="ctitle">Recruiter Performance</div><div class="csub">Roles closed in period</div><div class="bchart" id="ch-rc"></div></div>
+</div>
+<div class="cgrid">
+  <div class="cwrap"><div class="ctitle">Candidate Pool by Status</div><div class="csub">Current pool health</div><div class="mlist" id="ch-ps"></div></div>
+  <div class="cwrap"><div class="ctitle">Pool by Category</div><div class="csub">Skills distribution</div><div class="bchart" id="ch-pc"></div></div>
+</div>
+<div class="cgrid">
+  <div class="cwrap">
+    <div class="ctitle">SLA Performance — Time to Share CVs</div>
+    <div class="csub">Dental/RCM target: 2 working days &nbsp;|&nbsp; Client Facing/Internal target: 5 working days</div>
+    <div id="ch-sla-cvs"></div>
+  </div>
+  <div class="cwrap">
+    <div class="ctitle">SLA Performance — Time to Hire</div>
+    <div class="csub">Dental/RCM target: 2 working days &nbsp;|&nbsp; Client Facing/Internal target: 5 working days</div>
+    <div id="ch-sla-hire"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><h3>Recruiter Metrics Table</h3></div>
+  <div class="card-body" style="padding:0 8px 8px;">
+    <div style="overflow-x:auto;"><table class="tbl" id="rTbl"><thead><tr><th>Recruiter</th><th>Total Roles</th><th>Closed</th><th>Avg Days to CVs</th><th>SLA (CVs)</th><th>Avg Time to Hire</th><th>SLA (Hire)</th><th>Positions Filled</th><th>Fill Rate</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- PLACEMENT CONFIRMATION MODAL -->
+<div class="moverlay" id="placeM">
+  <div class="modal" style="max-width:560px;">
+    <div style="font-size:36px;text-align:center;margin-bottom:8px;">🎉</div>
+    <h3 style="text-align:center;">Deal Closed — Record Placement</h3>
+    <p style="text-align:center;">Confirm which candidate(s) were placed and which recruiter made each placement. This will update the candidate pool and commission records.</p>
+    <div id="placementRows" style="margin-bottom:16px;"></div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Placement Notes</label>
+      <input type="text" id="placeNotes" placeholder="Any notes about this placement…">
+    </div>
+    <div class="modal-acts">
+      <button class="btn btn-secondary" onclick="skipPlacement()">Skip for now</button>
+      <button class="btn btn-primary" onclick="confirmPlacement()">✓ Confirm Placements</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="tIcon">✓</span><span id="tMsg"></span></div>
+
+<!-- DELETE MODAL -->
+<div class="moverlay" id="delM">
+  <div class="modal">
+    <h3>Delete Record?</h3><p>This action cannot be undone.</p>
+    <div class="modal-acts"><button class="btn btn-secondary" onclick="closeM()">Cancel</button><button class="btn btn-danger" onclick="doDelete()">Delete</button></div>
+  </div>
+</div>
+
+<!-- WARNING MODAL -->
+<div class="moverlay" id="warnM">
+  <div class="modal">
+    <div class="wicon">⚠️</div>
+    <h3>Candidate Status Warning</h3>
+    <p>The following candidates are currently <strong>In Consideration, Placed, or Blacklisted</strong> — they may already be committed elsewhere. Adding them requires an override reason for your audit trail:</p>
+    <div class="wcands" id="wList"></div>
+    <div class="field"><label>Override Reason <span class="req">*</span></label><input type="text" id="wReason" placeholder="Explain why this override is appropriate…"></div>
+    <div class="modal-acts">
+      <button class="btn btn-secondary" onclick="cancelWarn()">Cancel — Remove Them</button>
+      <button class="btn btn-gold" onclick="doOverride()">Proceed with Override</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ADD MODAL -->
+<div class="moverlay" id="qaM">
+  <div class="modal">
+    <h3>Add New Candidate to Pool</h3>
+    <p>This candidate will be saved to the pool and linked to the current deal. Choose their status carefully — it controls whether they can be added to other opportunities without a warning.</p>
+    <div class="fg fg-2" style="margin-bottom:14px;">
+      <div class="field"><label>First Name <span class="req">*</span></label><input type="text" id="qa-fn" placeholder="First name"></div>
+      <div class="field"><label>Last Name <span class="req">*</span></label><input type="text" id="qa-ln" placeholder="Last name"></div>
+    </div>
+    <div class="fg fg-2" style="margin-bottom:14px;">
+      <div class="field"><label>Email</label><input type="email" id="qa-em" placeholder="email@example.com"></div>
+      <div class="field"><label>Phone</label><input type="tel" id="qa-ph" placeholder="+263…"></div>
+    </div>
+    <div class="fg fg-2" style="margin-bottom:14px;">
+      <div class="field"><label>Job Category</label><select id="qa-cat"><option value="">Select</option><option>Dental</option><option>RCM</option><option>Sales &amp; Marketing</option><option>Business Development</option><option>Finance and Accounting</option><option>Customer Service</option><option>IT and Computer Science</option><option>Other</option></select></div>
+      <div class="field"><label>Region</label><select id="qa-rg"><option value="">Select</option><option>Zimbabwe</option><option>Zambia</option><option>Costa Rica</option></select></div>
+    </div>
+    <div class="fg fg-1" style="margin-bottom:0;">
+      <div class="field">
+        <label>Pool Status <span class="req">*</span></label>
+        <select id="qa-st" onchange="highlightQaStatus(this)">
+          <option value="">&#8212; Select a status &#8212;</option>
+          <option value="available">Available &#8212; free to be placed on opportunities</option>
+          <option value="consideration">In Consideration &#8212; currently being evaluated</option>
+          <option value="placed">Placed &#8212; already successfully placed</option>
+          <option value="blacklisted">Blacklisted &#8212; do not consider for any role</option>
+        </select>
+        <div id="qa-st-hint" style="font-size:11px;margin-top:5px;min-height:16px;padding:4px 8px;border-radius:6px;"></div>
+      </div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn btn-secondary" onclick="closeM()">Cancel</button>
+      <button class="btn btn-primary" onclick="doQuickAdd()">Add to Pool &amp; Select</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════ DATA ════
+let TA   = JSON.parse(localStorage.getItem('zw_ta')   ||'[]');
+let CAND = JSON.parse(localStorage.getItem('zw_cd')   ||'[]');
+let COA  = JSON.parse(localStorage.getItem('zw_co')   ||'[]');
+
+let editTA=null,editCP=null,editC=null,delId=null,delType=null;
+let selIds=[],pendWarn=[],overrideOk=false;
+let taP=1,poolP=1,cP=1;
+const PER=10,PPER=12;
+
+// ════ UTILS ════
+const gid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2,5);
+function save(){localStorage.setItem('zw_ta',JSON.stringify(TA));localStorage.setItem('zw_cd',JSON.stringify(CAND));localStorage.setItem('zw_co',JSON.stringify(COA));}
+function toast(msg,t='success'){const el=document.getElementById('toast');document.getElementById('tMsg').textContent=msg;document.getElementById('tIcon').textContent=t==='success'?'✓':t==='warning'?'⚠':'✕';el.className='toast '+t+' show';setTimeout(()=>el.classList.remove('show'),3200);}
+function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('page-'+tab).classList.add('active');if(tab==='analytics')renderAn();if(tab==='candidates'){renderPool();renderPS();}}
+function wd(d1,d2){if(!d1||!d2)return'';let a=new Date(d1),b=new Date(d2),n=0;while(a<=b){const d=a.getDay();if(d&&d<6)n++;a.setDate(a.getDate()+1);}return n;}
+function calcWD(){const r=document.getElementById('f-datereq').value,c=document.getElementById('f-datecvs').value,h=document.getElementById('f-datehired').value;if(r&&c)document.getElementById('f-wdc').value=wd(r,c);if(r&&h)document.getElementById('f-wdh').value=wd(r,h);}
+function closeM(){document.querySelectorAll('.moverlay').forEach(m=>m.classList.remove('open'));pendWarn=[];document.getElementById('wReason').value='';}
+function avg(a){return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'—';}
+
+// ════ CANDIDATE HELPERS ════
+const cn=c=>(c.firstName+' '+c.lastName).trim();
+const sLabel={available:'Available',consideration:'In Consideration',placed:'Placed',blacklisted:'Blacklisted',flagged:'Flagged for Review'};
+const sPill={available:'sp-available',consideration:'sp-consideration',placed:'sp-placed',blacklisted:'sp-blacklisted',flagged:'sp-flagged'};
+const sSel={available:'st-available',consideration:'st-consideration',placed:'st-placed',blacklisted:'st-blacklisted',flagged:'st-flagged'};
+const restricted=s=>s==='consideration'||s==='placed'||s==='blacklisted'||s==='flagged';
+
+// ════ CANDIDATE POOL ════
+function getTraining(){return{dental:document.getElementById('tr-dental').checked,foundation:document.getElementById('tr-foundation').checked,ea:document.getElementById('tr-ea').checked,rcm:document.getElementById('tr-rcm').checked,it:document.getElementById('tr-it').checked};}
+function setTraining(t){if(!t)return;document.getElementById('tr-dental').checked=!!t.dental;document.getElementById('tr-foundation').checked=!!t.foundation;document.getElementById('tr-ea').checked=!!t.ea;document.getElementById('tr-rcm').checked=!!t.rcm;document.getElementById('tr-it').checked=!!t.it;}
+
+function genPlacementId(){
+  // Purely numeric starting at 100001, incrementing per placement
+  const existing=CAND.filter(c=>c.placementId&&/^\d+$/.test(c.placementId));
+  const maxSeq=existing.reduce((mx,c)=>{const n=parseInt(c.placementId||'0');return n>mx?n:mx;},100000);
+  return String(maxSeq+1);
+}
+
+function saveCP(){
+  const fn=document.getElementById('cp-fn').value.trim(),ln=document.getElementById('cp-ln').value.trim(),st=document.getElementById('cp-st').value;
+  if(!fn||!ln||!st){toast('Name and status are required','error');return;}
+  const existing=editCP?CAND.find(c=>c.id===editCP):null;
+  // Generate placement ID when status moves to placed
+  let pid=existing?existing.placementId||'':'';
+  if(st==='placed'&&!pid) pid=genPlacementId();
+  const r={id:editCP||gid(),firstName:fn,lastName:ln,email:document.getElementById('cp-em').value.trim(),phone:document.getElementById('cp-ph').value.trim(),category:document.getElementById('cp-cat').value,level:document.getElementById('cp-lv').value,region:document.getElementById('cp-rg').value,status:st,training:getTraining(),notes:document.getElementById('cp-nt').value.trim(),placementId:pid,createdAt:existing?existing.createdAt||new Date().toISOString():new Date().toISOString()};
+  if(editCP){const i=CAND.findIndex(c=>c.id===editCP);if(i>-1)CAND[i]=r;editCP=null;}else CAND.unshift(r);
+  save();clearCP();renderPool();renderPS();
+  if(pid&&st==='placed')toast('Candidate saved — Placement ID: '+pid);
+  else toast('Candidate saved');
+  document.getElementById('cpMode').textContent='ADD';
+}
+function clearCP(){['cp-fn','cp-ln','cp-em','cp-ph','cp-nt'].forEach(id=>document.getElementById(id).value='');['cp-cat','cp-lv','cp-rg','cp-st'].forEach(id=>document.getElementById(id).value='');['tr-dental','tr-foundation','tr-ea','tr-rcm','tr-it'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});editCP=null;document.getElementById('cpMode').textContent='ADD';}
+function editCPfn(id){const c=CAND.find(x=>x.id===id);if(!c)return;editCP=id;document.getElementById('cpMode').textContent='EDITING';document.getElementById('cp-fn').value=c.firstName||'';document.getElementById('cp-ln').value=c.lastName||'';document.getElementById('cp-em').value=c.email||'';document.getElementById('cp-ph').value=c.phone||'';document.getElementById('cp-cat').value=c.category||'';document.getElementById('cp-lv').value=c.level||'';document.getElementById('cp-rg').value=c.region||'';document.getElementById('cp-st').value=c.status||'available';document.getElementById('cp-nt').value=c.notes||'';setTraining(c.training);document.getElementById('page-candidates').scrollIntoView({behavior:'smooth'});}
+function updSt(id,v){
+  const c=CAND.find(x=>x.id===id);if(!c)return;
+  c.status=v;
+  if(v==='placed'&&!c.placementId){c.placementId=genPlacementId();toast('Status → Placed. ID: '+c.placementId);}
+  else if(v==='blacklisted'){toast('Candidate blacklisted','warning');}
+  else if(v==='flagged'){toast('Candidate flagged for recruiter review','warning');}
+  else toast('Status updated to '+sLabel[v]);
+  save();renderPool();renderPS();
+}
+
+function renderPS(){
+  const t=CAND.length,av=CAND.filter(c=>c.status==='available').length,co=CAND.filter(c=>c.status==='consideration').length,bl=CAND.filter(c=>c.status==='blacklisted').length;
+  const fl2=CAND.filter(c=>c.status==='flagged').length;
+  document.getElementById('pstats').innerHTML=`<div class="pstat"><div class="pstat-n" style="color:var(--teal)">${t}</div><div class="pstat-l">Total Pool</div></div><div class="pstat"><div class="pstat-n" style="color:var(--green)">${av}</div><div class="pstat-l">Available</div></div><div class="pstat"><div class="pstat-n" style="color:#3182CE">${co}</div><div class="pstat-l">In Consideration</div></div>${fl2?`<div class="pstat" style="border:2px solid var(--gold);"><div class="pstat-n" style="color:var(--gold)">${fl2}</div><div class="pstat-l">⚑ Flagged for Review</div></div>`:''}<div class="pstat"><div class="pstat-n" style="color:var(--red)">${bl}</div><div class="pstat-l">Blacklisted</div></div>`;
+}
+
+function renderPool(){
+  const q=(document.getElementById('cpQ').value||'').toLowerCase(),sf=document.getElementById('cpSf').value,cf=document.getElementById('cpCf').value,rf=document.getElementById('cpRf').value;
+  let data=CAND.filter(c=>{const nm=cn(c).toLowerCase();if(q&&!nm.includes(q)&&!(c.email||'').toLowerCase().includes(q))return false;if(sf&&c.status!==sf)return false;if(cf&&c.category!==cf)return false;if(rf&&c.region!==rf)return false;return true;});
+  const tot=data.length,tp=Math.ceil(tot/PPER)||1;if(poolP>tp)poolP=1;
+  const st=(poolP-1)*PPER,pg=data.slice(st,st+PPER);
+  const g=document.getElementById('poolGrid');
+  if(!pg.length){g.innerHTML='<div class="es" style="grid-column:1/-1"><div class="ei">👥</div><p>No candidates found.</p></div>';
+  } else {
+    g.innerHTML=pg.map(c=>{
+      const s=c.status||'available',r=restricted(s),deals=TA.filter(x=>(x.candidateIds||[]).includes(c.id));
+      const border=r||s==='flagged'?`border-left:3px solid ${s==='blacklisted'?'var(--red)':s==='placed'?'var(--green)':s==='flagged'?'var(--gold)':'var(--teal)'}`:'' ;
+      // Coaching eligibility
+      const coachRec=COA.find(x=>x.candId===c.id);
+      const isEligible=coachRec&&coachRec.readiness==='Ready for Interview';
+      const coachBadge=coachRec?`<span class="ready-badge ${isEligible?'rb-ready':'rb-notready'}">${isEligible?'✓ Interview Eligible':'Coaching: '+coachRec.readiness}</span>`:`<span class="ready-badge" style="background:#EDF2F7;color:var(--slate);">No coaching record</span>`;
+      // Training badges
+      const tr=c.training||{};
+      const trBadges=['dental','foundation','ea','rcm','it'].filter(k=>tr[k]).map(k=>({dental:'Dental',foundation:'Foundational',ea:'Exec EA',rcm:'RCM',it:'IT Support'}[k])).map(l=>`<span style="font-size:10px;background:#EBF8FF;color:#2B6CB0;padding:2px 7px;border-radius:8px;font-weight:600;">${l}</span>`).join(' ');
+      // Placement ID
+      const pidBadge=c.placementId?`<div style="margin-top:4px;"><span class="pid-badge">${c.placementId}</span><span style="font-size:11px;color:var(--slate);margin-left:6px;">Placement ID</span></div>`:'';
+      const dl=deals.length?`<div class="ccard-deals"><strong>${deals.length} deal${deals.length>1?'s':''}</strong>: ${deals.slice(0,2).map(d=>d.deal||d.client).join(', ')}${deals.length>2?'…':''}</div>`:'<div class="ccard-deals" style="color:#aaa;">No deals linked</div>';
+      return `<div class="ccard" style="${border}">
+        <div><div class="ccard-name">${cn(c)}</div><div class="ccard-info">${c.email||'—'}</div><div class="ccard-info">${c.phone||'—'}</div></div>
+        <div class="ccard-meta">${c.category?`<span style="font-size:11px;background:var(--light);padding:2px 8px;border-radius:10px;">${c.category}</span>`:''} ${c.region?`<span style="font-size:11px;background:#f0f0f0;padding:2px 8px;border-radius:10px;">${c.region}</span>`:''}</div>
+        <div>${coachBadge}</div>
+        ${trBadges?`<div style="display:flex;flex-wrap:wrap;gap:4px;">${trBadges}</div>`:''}
+        <select class="ssel ${sSel[s]||'st-available'}" onchange="updSt('${c.id}',this.value)"><option value="available" ${s==='available'?'selected':''}>Available</option><option value="consideration" ${s==='consideration'?'selected':''}>In Consideration</option><option value="placed" ${s==='placed'?'selected':''}>Placed</option><option value="blacklisted" ${s==='blacklisted'?'selected':''}>Blacklisted</option><option value="flagged" ${s==='flagged'?'selected':''}>Flagged for Review</option></select>
+        ${pidBadge}
+        ${dl}
+        ${c.notes?`<div class="ccard-note">"${c.notes}"</div>`:''}
+        <div class="ccard-acts"><button class="btn btn-secondary btn-sm" onclick="editCPfn('${c.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="openDel('${c.id}','cand')">Remove</button></div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('ppI').textContent=`Showing ${st+1}–${Math.min(st+PPER,tot)} of ${tot}`;
+  const bc=document.getElementById('ppB');bc.innerHTML='';for(let i=1;i<=tp;i++){const b=document.createElement('button');b.className='pbtn'+(i===poolP?' active':'');b.textContent=i;b.onclick=()=>{poolP=i;renderPool();};bc.appendChild(b);}
+}
+
+
+// ════ CANDIDATE PICKER (deal form) ════
+function searchCands(){
+  const raw=document.getElementById('csearch').value||'',q=raw.toLowerCase().trim(),dd=document.getElementById('cdropdown');
+  if(!q){dd.classList.remove('open');return;}
+  const res=CAND.filter(c=>cn(c).toLowerCase().includes(q)&&!selIds.includes(c.id)).slice(0,8);
+  let html='';
+  if(res.length){
+    html+=res.map(c=>{
+      // Show how many OTHER active deals this candidate is on (for context)
+      const activeDealCount=TA.filter(x=>(x.candidateIds||[]).includes(c.id)&&x.status==='Open').length;
+      const extraInfo=activeDealCount>0?` · <span style="color:var(--gold);font-weight:600;">${activeDealCount} open deal${activeDealCount>1?'s':''}</span>`:'';
+      return `<div class="coption" onclick="pickCand('${c.id}')"><div><div class="coption-name">${cn(c)}</div><div class="coption-meta">${[c.category,c.region].filter(Boolean).join(' · ')}${extraInfo}</div></div><span class="spill ${sPill[c.status||'available']}">${sLabel[c.status||'available']}</span></div>`;
+    }).join('');
+  }
+  // Always show "add as new" option at bottom so recruiter can type a full name and press Enter
+  const exactMatch=CAND.find(c=>cn(c).toLowerCase()===q&&!selIds.includes(c.id));
+  if(!exactMatch){
+    html+=`<div class="coption" style="border-top:${res.length?'2px solid var(--border)':'none'};background:#F0FFF4;" onclick="addNewFromSearch()">
+      <div><div class="coption-name" style="color:var(--green);">+ Add "<strong>${raw.trim()}</strong>" as new candidate</div>
+      <div class="coption-meta">Will be saved to pool as <strong>In Consideration</strong></div></div>
+      <span class="spill sp-consideration">New</span>
+    </div>`;
+  }
+  dd.innerHTML=html||`<div class="no-res">Start typing a name to search or add</div>`;
+  dd.classList.add('open');
+}
+
+// Enter key on search input — add new candidate immediately if no exact match
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.activeElement&&document.activeElement.id==='csearch'){
+    e.preventDefault();
+    const q=(document.getElementById('csearch').value||'').trim();
+    if(!q)return;
+    const exact=CAND.find(c=>cn(c).toLowerCase()===q.toLowerCase()&&!selIds.includes(c.id));
+    if(exact){pickCand(exact.id);}else{addNewFromSearch();}
+  }
+});
+
+function addNewFromSearch(){
+  const raw=(document.getElementById('csearch').value||'').trim();
+  if(!raw){toast('Please type a candidate name first','error');return;}
+  // Pre-fill the quick-add modal with the typed name, then let recruiter choose status
+  const parts=raw.trim().split(' ');
+  document.getElementById('qa-fn').value=parts.length>1?parts.slice(0,-1).join(' '):parts[0];
+  document.getElementById('qa-ln').value=parts.length>1?parts[parts.length-1]:'';
+  document.getElementById('qa-st').value='';
+  document.getElementById('qa-st-hint').textContent='';
+  document.getElementById('qa-st-hint').style.background='';
+  document.getElementById('cdropdown').classList.remove('open');
+  document.getElementById('qaM').classList.add('open');
+}
+
+function highlightQaStatus(sel){
+  const hints={
+    available:{text:'This candidate is free to be assigned to any opportunity.',bg:'#F0FFF4',color:'#276749'},
+    consideration:{text:'Warning: adding this candidate to another deal will trigger a conflict alert.',bg:'#EBF8FF',color:'#2A69AC'},
+    placed:{text:'Warning: this candidate is already placed. Adding to a deal will trigger a conflict alert.',bg:'#FFF3CD',color:'#92400E'},
+    blacklisted:{text:'Warning: blacklisted candidates will always trigger a conflict alert when added to deals.',bg:'#FFF5F5',color:'#9B2C2C'}
+  };
+  const h=hints[sel.value];
+  const hint=document.getElementById('qa-st-hint');
+  if(h){hint.textContent=h.text;hint.style.background=h.bg;hint.style.color=h.color;}
+  else{hint.textContent='';hint.style.background='';hint.style.color='';}
+}
+
+function pickCand(id){
+  if(selIds.includes(id))return;
+  const c=CAND.find(x=>x.id===id);if(!c)return;
+  const s=c.status||'available';
+  // Warn for In Consideration, Placed, and Blacklisted — all three are restricted
+  if(restricted(s)&&!overrideOk){
+    pendWarn.push(c);
+    // Build context: how many open deals is this person already on?
+    pendWarn[pendWarn.length-1]._openDeals=TA.filter(x=>(x.candidateIds||[]).includes(c.id)&&x.status==='Open').map(x=>x.deal||x.client).join(', ');
+    showWarn();return;
+  }
+  addTag(id);document.getElementById('cdropdown').classList.remove('open');document.getElementById('csearch').value='';
+}
+
+function addTag(id){
+  if(selIds.includes(id))return;
+  const c=CAND.find(x=>x.id===id);if(!c)return;
+  selIds.push(id);
+  const t=document.createElement('div');t.className='ctag';t.id='ct-'+id;
+  t.innerHTML=`${cn(c)} <span class="ctag-x" onclick="rmTag('${id}')">×</span>`;
+  document.getElementById('ctags').appendChild(t);
+}
+
+function rmTag(id){selIds=selIds.filter(x=>x!==id);const el=document.getElementById('ct-'+id);if(el)el.remove();}
+
+function showWarn(){
+  document.getElementById('wList').innerHTML=pendWarn.map(c=>`
+    <div class="wrow">
+      <div>
+        <div style="font-weight:600;">${cn(c)}</div>
+        ${c._openDeals?`<div style="font-size:11px;color:var(--slate);margin-top:2px;">Currently on: ${c._openDeals}</div>`:''}
+      </div>
+      <span class="spill ${sPill[c.status||'available']}">${sLabel[c.status||'available']}</span>
+    </div>`).join('');
+  document.getElementById('warnM').classList.add('open');
+}
+
+function cancelWarn(){
+  // Remove pending warn candidates from selected and clear
+  pendWarn.forEach(c=>rmTag(c.id));
+  pendWarn=[];closeM();
+}
+
+function doOverride(){
+  const r=document.getElementById('wReason').value.trim();
+  if(!r){toast('Please provide an override reason','error');return;}
+  overrideOk=true;
+  pendWarn.forEach(c=>addTag(c.id));
+  pendWarn=[];closeM();
+  toast('Override applied — reason logged for audit','warning');
+}
+
+function openQuickAdd(){document.getElementById('qaM').classList.add('open');}
+
+function doQuickAdd(){
+  const fn=document.getElementById('qa-fn').value.trim(),ln=document.getElementById('qa-ln').value.trim();
+  const st=document.getElementById('qa-st').value;
+  if(!fn||!ln){toast('First and last name are required','error');return;}
+  if(!st){toast('Please select a pool status before saving','error');return;}
+  const r={id:gid(),firstName:fn,lastName:ln,email:document.getElementById('qa-em').value.trim(),phone:document.getElementById('qa-ph').value.trim(),category:document.getElementById('qa-cat').value,region:document.getElementById('qa-rg').value,status:st,notes:'',createdAt:new Date().toISOString()};
+  CAND.unshift(r);save();addTag(r.id);closeM();
+  ['qa-fn','qa-ln','qa-em','qa-ph'].forEach(id=>document.getElementById(id).value='');
+  ['qa-cat','qa-rg','qa-st'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('qa-st-hint').textContent='';
+  document.getElementById('qa-st-hint').style.background='';
+  toast(`${fn} ${ln} added to pool as ${sLabel[st]}`);
+}
+
+document.addEventListener('click',e=>{const dd=document.getElementById('cdropdown');if(dd&&!document.getElementById('cpicker').contains(e.target))dd.classList.remove('open');});
+
+// ════ LOCATION + SEATS ════
+function toggleSeat(cb){
+  const key=cb.value.replace(/ /g,'');
+  const si=document.getElementById('seats-'+key);
+  const row=document.getElementById('loc-'+key);
+  if(cb.checked){si.style.display='';si.value=si.value||1;row.classList.add('active');}
+  else{si.style.display='';si.value='';si.style.display='none';row.classList.remove('active');}
+  updateTotalSeats();
+}
+function updateTotalSeats(){
+  const locs=getLocations();
+  const total=locs.reduce((s,l)=>s+(l.seats||0),0);
+  const disp=document.getElementById('totalSeatsDisplay');
+  if(locs.length&&total>0){
+    disp.style.display='block';
+    disp.textContent=`Total seats: ${total} across ${locs.length} location${locs.length>1?'s':''} (${locs.map(l=>l.location+': '+l.seats).join(', ')})`;
+  } else {disp.style.display='none';}
+}
+
+// ════ STATUS CHANGE HANDLER ════
+function onStatusChange(sel){
+  // No immediate action needed — placement modal fires on save if status=Closed
+}
+
+// ════ PLACEMENT MODAL ════
+const RECRUITERS=['Audrey','Chamaine','Tevin','Sean','Nicola','Andrea','Monje','Victoria','Fiona','Nalishebo','Melissa','Stephanie','Angie'];
+
+function openPlacementModal(d){
+  const cands=(d.candidateIds||[]).map(cid=>CAND.find(x=>x.id===cid)).filter(Boolean);
+  const ricOptions=RECRUITERS.map(r=>`<option value="${r}"${r===d.ric?' selected':''}>${r}</option>`).join('');
+  if(!cands.length){
+    // No candidates on deal yet — show simplified modal
+    document.getElementById('placementRows').innerHTML=`<p style="color:var(--slate);font-size:13px;text-align:center;padding:12px;">No candidates are linked to this deal yet. You can add placements later by editing the record.</p>`;
+  } else {
+    document.getElementById('placementRows').innerHTML=cands.map(c=>`
+      <div class="placement-row" id="prow-${c.id}">
+        <div>
+          <div class="placement-cand">${cn(c)}</div>
+          <div style="font-size:11px;color:var(--slate);margin-top:2px;">${c.category||''} ${c.region?'· '+c.region:''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label style="font-size:12px;color:var(--slate);display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="placed-${c.id}" style="accent-color:var(--teal);" onchange="togglePlacedRow('${c.id}')"> Placed?
+          </label>
+          <select class="placement-sel" id="placer-${c.id}" disabled>
+            <option value="">— Placed by —</option>
+            ${ricOptions}
+          </select>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('placeNotes').value='';
+  document.getElementById('placeM').classList.add('open');
+}
+
+function togglePlacedRow(cid){
+  const cb=document.getElementById('placed-'+cid);
+  const sel=document.getElementById('placer-'+cid);
+  const row=document.getElementById('prow-'+cid);
+  if(cb&&cb.checked){sel.disabled=false;row.style.background='#F0FFF4';}
+  else{sel.disabled=true;sel.value='';if(row)row.style.background='';}
+}
+
+function confirmPlacement(){
+  if(!pendingSaveData)return;
+  const d=pendingSaveData;
+  const notes=document.getElementById('placeNotes').value.trim();
+  const placements=[];
+  (d.candidateIds||[]).forEach(cid=>{
+    const cb=document.getElementById('placed-'+cid);
+    const sel=document.getElementById('placer-'+cid);
+    if(cb&&cb.checked){
+      const c=CAND.find(x=>x.id===cid);
+      const placerName=sel?sel.value:d.ric;
+      if(c&&!c.placementId){c.placementId=genPlacementId();}
+      placements.push({candidateId:cid,candidateName:c?cn(c):'Unknown',placedBy:placerName||d.ric,placedAt:new Date().toISOString(),notes:notes,placementId:c?c.placementId:''});
+      // Mark candidate as Placed in the pool
+      if(c)c.status='placed';
+    }
+  });
+  d.placements=placements;
+  if(notes&&!placements.length)d.closingNotes=notes;
+  closeM();
+  doSaveTA(d);
+  if(placements.length)toast(`${placements.length} placement${placements.length>1?'s':''} recorded 🎉`,'success');
+}
+
+function skipPlacement(){
+  if(!pendingSaveData)return;
+  const d=pendingSaveData;d.placements=d.placements||[];
+  closeM();doSaveTA(d);
+}
+
+// ════ TA RECORDS ════
+function getLocations(){
+  const locs=[];
+  ['Zimbabwe','Zambia','CostaRica','VictoriaFalls'].forEach(k=>{
+    const cb=document.querySelector(`#loc-${k} input[type=checkbox]`);
+    if(cb&&cb.checked){
+      const val=cb.value;
+      const seats=parseInt(document.getElementById('seats-'+k).value)||1;
+      locs.push({location:val,seats:seats});
+    }
+  });
+  return locs;
+}
+function getTotalSeats(locs){return(locs||[]).reduce((s,l)=>s+(l.seats||0),0);}
+function getTA(){
+  const locs=getLocations();
+  return{id:editTA||gid(),deal:document.getElementById('f-deal').value.trim(),client:document.getElementById('f-client').value.trim(),locations:locs,country:(locs.map(l=>l.location).join(', '))||'',totalSeats:getTotalSeats(locs),ric:document.getElementById('f-ric').value,coric:document.getElementById('f-coric').value,jobtype:document.getElementById('f-jobtype').value,sales:document.getElementById('f-sales').value,status:document.getElementById('f-status').value,phase:document.getElementById('f-phase').value,posreq:document.getElementById('f-posreq')?document.getElementById('f-posreq').value:'',datereq:document.getElementById('f-datereq').value,datecvs:document.getElementById('f-datecvs').value,dateintv:document.getElementById('f-dateintv').value,datehired:document.getElementById('f-datehired').value,datehold:document.getElementById('f-hold').value,cvf:document.getElementById('f-cvf').value,scr:document.getElementById('f-scr').value,intv:document.getElementById('f-intv').value,cch:document.getElementById('f-cch').value,ic:document.getElementById('f-ic').value,ci:document.getElementById('f-ci').value,pf:document.getElementById('f-pf').value,ce:document.getElementById('f-ce').value,nc:document.getElementById('f-nc').value,ih:document.getElementById('f-ih').value,wdc:document.getElementById('f-wdc').value,wdh:document.getElementById('f-wdh').value,cmt:document.getElementById('f-cmt').value.trim(),candidateIds:[...selIds],placements:editTA?(TA.find(r=>r.id===editTA)||{}).placements||[]:[]};
+}
+
+let pendingSaveData=null;
+function saveTA(){
+  const d=getTA();
+  if(!d.deal||!d.client||!d.locations.length||!d.ric||!d.jobtype||!d.status||!d.datereq){toast('Fill all required fields including at least one location','error');return;}
+  // If status just changed to Closed, trigger placement modal first
+  const prev=editTA?TA.find(r=>r.id===editTA):null;
+  const wasClosed=prev&&prev.status==='Closed';
+  if(d.status==='Closed'&&!wasClosed&&d.candidateIds.length>0){
+    pendingSaveData=d;openPlacementModal(d);return;
+  }
+  doSaveTA(d);
+}
+function doSaveTA(d){
+  if(editTA){const i=TA.findIndex(r=>r.id===editTA);if(i>-1)TA[i]=d;editTA=null;}else TA.unshift(d);
+  save();clearTA();renderTA();renderPS();toast('Record saved');document.getElementById('fMode').textContent='ADD RECORD';
+  pendingSaveData=null;
+}
+
+function clearTA(){
+  ['f-datereq','f-datecvs','f-dateintv','f-datehired','f-hold','f-cvf','f-scr','f-intv','f-cch','f-ic','f-ci','f-pf','f-ce','f-nc','f-ih','f-wdc','f-wdh','f-cmt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-ric','f-coric','f-jobtype','f-sales','f-status','f-phase'].forEach(id=>document.getElementById(id).value='');
+  // Clear location checkboxes and seat inputs
+  ['Zimbabwe','Zambia','CostaRica','VictoriaFalls'].forEach(k=>{
+    const cb=document.querySelector('#loc-'+k+' input[type=checkbox]');
+    if(cb){cb.checked=false;}
+    const si=document.getElementById('seats-'+k);
+    if(si){si.value='';si.style.display='none';}
+    const row=document.getElementById('loc-'+k);
+    if(row)row.classList.remove('active');
+  });
+  document.getElementById('totalSeatsDisplay').style.display='none';
+  document.getElementById('totalSeatsDisplay').textContent='';
+  selIds=[];overrideOk=false;
+  document.getElementById('ctags').innerHTML='';
+  document.getElementById('csearch').value='';
+  document.getElementById('f-deal').value='';
+  document.getElementById('f-client').value='';
+  editTA=null;pendingSaveData=null;
+  document.getElementById('fMode').textContent='ADD RECORD';
+}
+
+function editTAfn(id){
+  const r=TA.find(x=>x.id===id);if(!r)return;
+  editTA=id;document.getElementById('fMode').textContent='EDITING';
+  document.getElementById('f-deal').value=r.deal||'';
+  document.getElementById('f-client').value=r.client||'';
+  document.getElementById('f-ric').value=r.ric||'';
+  document.getElementById('f-coric').value=r.coric||'';
+  document.getElementById('f-jobtype').value=r.jobtype||'';
+  document.getElementById('f-sales').value=r.sales||'';
+  document.getElementById('f-status').value=r.status||'';
+  document.getElementById('f-phase').value=r.phase||'';
+  document.getElementById('f-hold').value=r.datehold||'';
+  ['f-datereq','f-datecvs','f-dateintv','f-datehired','f-cvf','f-scr','f-intv','f-cch','f-ic','f-ci','f-pf','f-ce','f-nc','f-ih','f-wdc','f-wdh','f-cmt'].forEach(k=>{
+    const fld=k.replace('f-','');
+    const el=document.getElementById(k);
+    if(el)el.value=r[fld]||r[k.replace('f-','')]||'';
+  });
+  // Restore locations
+  const locMap={'Zimbabwe':'Zimbabwe','Zambia':'Zambia','Costa Rica':'CostaRica','Victoria Falls':'VictoriaFalls'};
+  ['Zimbabwe','Zambia','CostaRica','VictoriaFalls'].forEach(k=>{
+    const cb=document.querySelector('#loc-'+k+' input[type=checkbox]');
+    const si=document.getElementById('seats-'+k);
+    const row=document.getElementById('loc-'+k);
+    if(cb){cb.checked=false;}if(si){si.value='';si.style.display='none';}if(row)row.classList.remove('active');
+  });
+  (r.locations||[]).forEach(l=>{
+    const k=locMap[l.location];if(!k)return;
+    const cb=document.querySelector('#loc-'+k+' input[type=checkbox]');
+    const si=document.getElementById('seats-'+k);
+    const row=document.getElementById('loc-'+k);
+    if(cb)cb.checked=true;if(si){si.value=l.seats||1;si.style.display='';}if(row)row.classList.add('active');
+  });
+  updateTotalSeats();
+  // Restore candidates
+  selIds=[];document.getElementById('ctags').innerHTML='';
+  (r.candidateIds||[]).forEach(cid=>{const c=CAND.find(x=>x.id===cid);if(c){selIds.push(cid);const t=document.createElement('div');t.className='ctag';t.id='ct-'+cid;t.innerHTML=`${cn(c)} <span class="ctag-x" onclick="rmTag('${cid}')">×</span>`;document.getElementById('ctags').appendChild(t);}});
+  document.getElementById('page-ta').scrollIntoView({behavior:'smooth'});
+}
+
+function renderTA(){
+  const q=(document.getElementById('taQ').value||'').toLowerCase(),sf=document.getElementById('fSt').value,jf=document.getElementById('fJt').value;
+  let data=TA.filter(r=>{const locStr=(r.locations||[]).map(l=>l.location).join(' ');const m=!q||[r.deal,r.client,r.country,locStr,r.ric,r.coric,r.jobtype].join(' ').toLowerCase().includes(q);return m&&(!sf||r.status===sf)&&(!jf||r.jobtype===jf);});
+  const tot=data.length;document.getElementById('taCount').textContent=`${TA.length} records`;
+  const tp=Math.ceil(tot/PER)||1;if(taP>tp)taP=1;const st=(taP-1)*PER,pg=data.slice(st,st+PER);
+  const body=document.getElementById('taBody');
+  if(!pg.length){body.innerHTML=`<tr><td colspan="14"><div class="es"><div class="ei">📋</div><p>No records found. Add your first entry above.</p></div></td></tr>`;return;}
+  body.innerHTML=pg.map(r=>{
+    const sk=(r.status||'').replace(' ','');
+    // Location display: Zimbabwe(2), Zambia(1)
+    const locStr=r.locations&&r.locations.length?r.locations.map(l=>`${l.location}<span style="font-size:10px;color:var(--slate);"> (${l.seats})</span>`).join(', '):(r.country||'—');
+    const totalSts=r.totalSeats||r.locations&&r.locations.length?getTotalSeats(r.locations):r.posreq||'—';
+    // Recruiter display with co-recruiter
+    const ricDisplay=r.ric+(r.coric?`<span class="co-pill">+${r.coric}</span>`:'');
+    // Placements display
+    const placements=r.placements||[];
+    const placedStr=placements.length?placements.map(p=>`<span class="placed-badge">✓ ${p.candidateName} <span style="opacity:0.7;font-weight:400;">via ${p.placedBy}</span></span>`).join(' '):'—';
+    return`<tr>
+      <td><strong>${r.deal||'—'}</strong></td>
+      <td>${r.client||'—'}</td>
+      <td style="font-size:12px;">${locStr}</td>
+      <td>${ricDisplay}</td>
+      <td>${r.jobtype||'—'}</td>
+      <td><span class="sbadge s-${sk}">${r.status||'—'}</span></td>
+      <td>${r.datereq||'—'}</td>
+      <td>${r.datecvs||'—'}</td>
+      <td>${r.wdc||'—'}</td>
+      <td>${r.wdh||'—'}</td>
+      <td style="text-align:center;font-weight:700;">${totalSts}</td>
+      <td style="font-size:12px;max-width:160px;">${placedStr}</td>
+      <td><div class="tbl-acts"><button class="tbtn tbtn-e" onclick="editTAfn('${r.id}')">Edit</button><button class="tbtn tbtn-d" onclick="openDel('${r.id}','ta')">Del</button></div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('taPi').textContent=`Showing ${st+1}–${Math.min(st+PER,tot)} of ${tot}`;
+  const bc=document.getElementById('taPb');bc.innerHTML='';for(let i=1;i<=tp;i++){const b=document.createElement('button');b.className='pbtn'+(i===taP?' active':'');b.textContent=i;b.onclick=()=>{taP=i;renderTA();};bc.appendChild(b);}
+}
+
+// ════ DELETE ════
+function openDel(id,type){delId=id;delType=type;document.getElementById('delM').classList.add('open');}
+function doDelete(){
+  if(delType==='ta')TA=TA.filter(r=>r.id!==delId);
+  else if(delType==='cand')CAND=CAND.filter(c=>c.id!==delId);
+  else COA=COA.filter(c=>c.id!==delId);
+  save();closeM();
+  if(delType==='ta')renderTA();else if(delType==='cand'){renderPool();renderPS();}else renderC();
+  toast('Record deleted');
+}
+
+// ════ COACHING ════
+function togCoach(v,btn){
+  document.querySelectorAll('.togbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('cFormW').style.display=v==='form'?'':'none';
+  document.getElementById('cTblW').style.display=v==='records'?'':'none';
+  document.getElementById('cEligW').style.display=v==='eligible'?'':'none';
+  if(v==='records')renderC();
+  if(v==='eligible')renderEligible();
+  renderCoachKpis();
+}
+
+// Candidate search within coaching form
+function searchCoachCands(){
+  const q=(document.getElementById('c-candSearch').value||'').toLowerCase().trim();
+  const dd=document.getElementById('coachCdropdown');
+  if(!q){dd.classList.remove('open');return;}
+  const res=CAND.filter(c=>cn(c).toLowerCase().includes(q)&&c.status!=='blacklisted').slice(0,8);
+  dd.innerHTML=res.length?res.map(c=>{
+    const coachRec=COA.find(x=>x.candId===c.id);
+    const hasCoach=!!coachRec;
+    return `<div class="coption" onclick="linkCoachCand('${c.id}')">
+      <div><div class="coption-name">${cn(c)}</div>
+      <div class="coption-meta">${[c.category,c.region].filter(Boolean).join(' · ')}</div></div>
+      <span class="spill ${hasCoach?'sp-consideration':'sp-available'}">${hasCoach?'Has record':'New to coaching'}</span>
+    </div>`;
+  }).join(''):`<div class="no-res">No pool candidates match. Check the Candidate Pool tab.</div>`;
+  dd.classList.add('open');
+}
+
+function linkCoachCand(id){
+  const c=CAND.find(x=>x.id===id);if(!c)return;
+  document.getElementById('c-candId').value=id;
+  document.getElementById('c-candSearch').value=cn(c);
+  document.getElementById('coachCdropdown').classList.remove('open');
+  document.getElementById('c-candLinked').innerHTML=`<span class="spill sp-consideration" style="font-size:12px;">✓ Linked to pool: ${cn(c)}</span>`;
+  // Auto-fill region from pool record
+  if(c.region&&!document.getElementById('c-rg').value) document.getElementById('c-rg').value=c.region;
+  if(c.category&&!document.getElementById('c-jc').value){
+    // Try to map pool category to broad coaching category
+    const catMap={'Dental':'Clinical & Dental','RCM':'Revenue Cycle Management','Sales & Marketing':'Sales & Business Development','Business Development':'Sales & Business Development','Finance and Accounting':'Finance & Accounting','Customer Service':'Client Facing & Admin','IT and Computer Science':'Technology & IT'};
+    const mapped=catMap[c.category];
+    if(mapped)document.getElementById('c-jc').value=mapped;
+  }
+}
+
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('coachCdropdown');
+  if(dd&&!document.getElementById('coachCpicker').contains(e.target))dd.classList.remove('open');
+});
+
+function onReadinessChange(sel){
+  const isOffload=sel.value==='Offload';
+  document.getElementById('offloadWarning').style.display=isOffload?'block':'none';
+  // Mirror to interview status
+  if(sel.value==='Ready for Interview') document.getElementById('c-is').value='Ready for Interview';
+  if(sel.value==='Offload') document.getElementById('c-is').value='Offload';
+}
+
+function onIntvStatusChange(sel){
+  if(sel.value==='Offload'){document.getElementById('c-rs').value='Offload';document.getElementById('offloadWarning').style.display='block';}
+  else document.getElementById('offloadWarning').style.display='none';
+}
+
+function getC(){
+  return{
+    id:editC||gid(),
+    candId:document.getElementById('c-candId').value,
+    candName:document.getElementById('c-candSearch').value.trim()||document.getElementById('c-candSearch').placeholder,
+    date:document.getElementById('c-dt').value,
+    class:document.getElementById('c-cl').value,
+    attended:document.getElementById('c-at').value,
+    category:document.getElementById('c-jc').value,
+    level:document.getElementById('c-jl').value,
+    region:document.getElementById('c-rg').value,
+    piScore:document.getElementById('c-pi').value.trim(),
+    piRef:document.getElementById('c-pisc').value,
+    coreComp:document.getElementById('c-cc').value,
+    lastcoach:document.getElementById('c-lc').value,
+    readiness:document.getElementById('c-rs').value,
+    intvstatus:document.getElementById('c-is').value,
+    candsel:document.getElementById('c-cs').value,
+    firstintv:document.getElementById('c-fi').value,
+    lastround:document.getElementById('c-lr').value,
+    rejection:document.getElementById('c-rj').value,
+    action:document.getElementById('c-ac').value,
+    comments:document.getElementById('c-co').value
+  };
+}
+
+function saveC(){
+  const d=getC();
+  if(!d.date||!d.category||!d.region){toast('Date, category, and region are required','error');return;}
+  if(!d.candId&&!d.candName){toast('Please link or name a candidate','error');return;}
+  // Handle offload → flag for manual review (recruiter decides final action)
+  if((d.readiness==='Offload'||d.intvstatus==='Offload')&&d.candId){
+    const c=CAND.find(x=>x.id===d.candId);
+    if(c&&c.status!=='placed'&&c.status!=='blacklisted'){
+      c.status='flagged';
+      c.flagReason='Offloaded from coaching — awaiting recruiter review';
+      save();renderPS();
+      toast('Candidate flagged for recruiter review','warning');
+    }
+  }
+  if(editC){const i=COA.findIndex(r=>r.id===editC);if(i>-1)COA[i]=d;editC=null;}
+  else COA.unshift(d);
+  save();clearC();renderCoachKpis();toast('Coaching entry saved');document.getElementById('cMode').textContent='ADD';
+}
+
+function clearC(){
+  ['c-candSearch','c-dt','c-cl','c-pi','c-pisc','c-cc','c-lc','c-fi','c-lr','c-rj','c-ac','c-co'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['c-at','c-jc','c-jl','c-rg','c-rs','c-is','c-cs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('c-candId').value='';
+  document.getElementById('c-candLinked').innerHTML='';
+  document.getElementById('offloadWarning').style.display='none';
+  editC=null;document.getElementById('cMode').textContent='ADD';
+}
+
+function editCfn(id){
+  const r=COA.find(x=>x.id===id);if(!r)return;editC=id;document.getElementById('cMode').textContent='EDITING';
+  document.getElementById('c-candId').value=r.candId||'';
+  document.getElementById('c-candSearch').value=r.candName||'';
+  if(r.candId){const c=CAND.find(x=>x.id===r.candId);if(c)document.getElementById('c-candLinked').innerHTML=`<span class="spill sp-consideration" style="font-size:12px;">✓ Linked: ${cn(c)}</span>`;}
+  const m={'c-dt':r.date,'c-cl':r.class,'c-at':r.attended,'c-jc':r.category,'c-jl':r.level,'c-rg':r.region,'c-pi':r.piScore,'c-pisc':r.piRef,'c-cc':r.coreComp,'c-lc':r.lastcoach,'c-rs':r.readiness,'c-is':r.intvstatus,'c-cs':r.candsel,'c-fi':r.firstintv,'c-lr':r.lastround,'c-rj':r.rejection,'c-ac':r.action,'c-co':r.comments};
+  Object.entries(m).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v||'';});
+  document.getElementById('offloadWarning').style.display=(r.readiness==='Offload'||r.intvstatus==='Offload')?'block':'none';
+  togCoach('form',document.querySelector('.togbtn'));
+}
+
+const readinessCls={
+  'Ready for Interview':'rb-ready','Not Yet Ready':'rb-notready','Offload':'rb-offload',
+  'Interviewing':'rb-interviewing','Interview Complete':'rb-complete','Retrain':'rb-retrain'
+};
+
+function renderC(){
+  const q=(document.getElementById('cQ').value||'').toLowerCase();
+  const sf=document.getElementById('cFilt').value;
+  let data=COA.filter(r=>(!q||[r.candName,r.category,r.region].join(' ').toLowerCase().includes(q))&&(!sf||r.intvstatus===sf||r.readiness===sf));
+  const tot=data.length;document.getElementById('cCount').textContent=tot;
+  const tp=Math.ceil(tot/PER)||1;if(cP>tp)cP=1;const st=(cP-1)*PER,pg=data.slice(st,st+PER);
+  const body=document.getElementById('cBody');
+  if(!pg.length){body.innerHTML=`<tr><td colspan="10"><div class="es"><div class="ei">🎯</div><p>No coaching records yet.</p></div></td></tr>`;return;}
+  body.innerHTML=pg.map(r=>{
+    const rc=readinessCls[r.readiness]||'';
+    const ic=readinessCls[r.intvstatus]||'';
+    return`<tr>
+      <td>${r.date||'—'}</td>
+      <td><strong>${r.candName||'—'}</strong></td>
+      <td style="font-size:12px;">${r.category||'—'}</td>
+      <td>${r.region||'—'}</td>
+      <td style="font-size:12px;">${r.piScore||'—'}${r.piRef?` <span style="color:var(--slate)">(${r.piRef})</span>`:''}</td>
+      <td style="text-align:center;font-weight:700;">${r.coreComp?r.coreComp+'%':'—'}</td>
+      <td><span class="ready-badge ${rc}">${r.readiness||'—'}</span></td>
+      <td><span class="ready-badge ${ic}">${r.intvstatus||'—'}</span></td>
+      <td style="font-size:12px;">${r.candsel||'—'}</td>
+      <td><div class="tbl-acts"><button class="tbtn tbtn-e" onclick="editCfn('${r.id}')">Edit</button><button class="tbtn tbtn-d" onclick="openDel('${r.id}','coach')">Del</button></div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('cPi').textContent=`Showing ${st+1}–${Math.min(st+PER,tot)} of ${tot}`;
+  const bc=document.getElementById('cPb');bc.innerHTML='';for(let i=1;i<=tp;i++){const b=document.createElement('button');b.className='pbtn'+(i===cP?' active':'');b.textContent=i;b.onclick=()=>{cP=i;renderC();};bc.appendChild(b);}
+}
+
+function renderEligible(){
+  const eligible=CAND.filter(c=>{
+    const cr=COA.find(x=>x.candId===c.id);
+    return cr&&cr.readiness==='Ready for Interview'&&c.status!=='blacklisted'&&c.status!=='placed';
+  });
+  document.getElementById('eligCount').textContent=eligible.length;
+  const g=document.getElementById('eligGrid');
+  if(!eligible.length){g.innerHTML='<div class="es" style="grid-column:1/-1"><div class="ei">🏆</div><p>No candidates are currently marked as interview-eligible. Complete coaching sessions and set readiness to "Ready for Interview".</p></div>';return;}
+  g.innerHTML=eligible.map(c=>{
+    const cr=COA.find(x=>x.candId===c.id);
+    return`<div class="ccard" style="border-left:3px solid var(--green);">
+      <div><div class="ccard-name">${cn(c)}</div><div class="ccard-info">${c.email||'—'}</div></div>
+      <div class="ccard-meta">${c.category?`<span style="font-size:11px;background:var(--light);padding:2px 8px;border-radius:10px;">${c.category}</span>`:''} ${c.region?`<span style="font-size:11px;background:#f0f0f0;padding:2px 8px;border-radius:10px;">${c.region}</span>`:''}</div>
+      <span class="ready-badge rb-ready">✓ Interview Eligible</span>
+      ${cr?`<div style="font-size:12px;color:var(--slate);margin-top:4px;">PI: ${cr.piScore||'—'} &nbsp;|&nbsp; Core Comp: ${cr.coreComp?cr.coreComp+'%':'—'}</div>`:''}
+      <div class="ccard-acts"><button class="btn btn-secondary btn-sm" onclick="editCPfn('${c.id}')">View Profile</button></div>
+    </div>`;
+  }).join('');
+}
+
+function renderCoachKpis(){
+  const total=COA.length;
+  const ready=COA.filter(r=>r.readiness==='Ready for Interview').length;
+  const placed=CAND.filter(c=>c.status==='placed').length;
+  const firstRound=COA.filter(r=>r.candsel==='Yes — Placed'&&(r.lastround||'').toLowerCase().includes('1')).length;
+  const placed2=COA.filter(r=>r.candsel==='Yes — Placed').length;
+  const r1rate=placed2?Math.round(firstRound/placed2*100):0;
+  const rateColor=r1rate>=95?'var(--green)':r1rate>=80?'#D97706':'var(--red)';
+  document.getElementById('coachKpis').innerHTML=`
+    <div class="pstat"><div class="pstat-n" style="color:var(--teal)">${total}</div><div class="pstat-l">Sessions Logged</div></div>
+    <div class="pstat"><div class="pstat-n" style="color:var(--green)">${ready}</div><div class="pstat-l">Interview Eligible</div></div>
+    <div class="pstat"><div class="pstat-n" style="color:var(--gold)">${placed}</div><div class="pstat-l">Total Placed</div></div>
+    <div class="pstat"><div class="pstat-n" style="color:${rateColor}">${placed2?r1rate+'%':'—'}</div><div class="pstat-l">1st Round Place Rate <span style="font-size:9px;opacity:0.7;">Target: 95%</span></div></div>`;
+}
+
+// ════ ANALYTICS ════
+function getFilt(){const f=document.getElementById('af').value,t=document.getElementById('at').value,r=document.getElementById('ar').value,j=document.getElementById('aj').value,c=document.getElementById('ac').value;return TA.filter(x=>{if(f&&x.datereq<f)return false;if(t&&x.datereq>t)return false;if(r&&x.ric!==r)return false;if(j&&x.jobtype!==j)return false;if(c&&x.country!==c)return false;return true;});}
+
+function rBar(id,data,mx,cls){const el=document.getElementById(id);if(!el)return;el.innerHTML=data.map(([l,v])=>`<div class="brow"><div class="blabel">${l}</div><div class="btrack"><div class="bfill ${cls}" style="width:${mx?Math.round(v/mx*100):0}%">${v}</div></div></div>`).join('');}
+
+function renderAn(){
+  const data=getFilt(),tot=data.length,cl=data.filter(r=>r.status==='Closed').length,op=data.filter(r=>r.status==='Open').length,lo=data.filter(r=>r.status==='Lost'||r.status==='On Hold').length;
+  const fl=data.reduce((s,r)=>s+(parseFloat(r.pf)||0),0),sc=data.reduce((s,r)=>s+(parseFloat(r.scr)||0),0),pr=data.reduce((s,r)=>s+(parseFloat(r.posreq)||0),0),fr=pr?Math.round(fl/pr*100)+'%':'—';
+  const tts=avg(data.filter(r=>r.wdc).map(r=>parseFloat(r.wdc))),tth=avg(data.filter(r=>r.wdh).map(r=>parseFloat(r.wdh)));
+  document.getElementById('k-tts').textContent=tts;document.getElementById('k-tth').textContent=tth;document.getElementById('k-cl').textContent=cl;document.getElementById('k-fr').textContent=fr;document.getElementById('k-pl').textContent=CAND.length;
+  document.getElementById('s-op').textContent=op;document.getElementById('s-fl').textContent=fl;document.getElementById('s-sc').textContent=sc;document.getElementById('s-lo').textContent=lo;
+  const jts=[['Dental',0],['RCM',0],['Client Facing',0],['Internal',0]];jts.forEach(j=>j[1]=data.filter(r=>r.jobtype===j[0]).length);rBar('ch-jt',jts,Math.max(...jts.map(x=>x[1]),1),'bt');
+  // Count by location from the locations array (supports multi-location deals)
+const locNames=['Zimbabwe','Zambia','Costa Rica','Victoria Falls'];
+const cts=locNames.map(loc=>[loc,data.reduce((s,r)=>{const locs=r.locations||[];const found=locs.find(l=>l.location===loc);return s+(found?found.seats:0);},0)]).filter(x=>x[1]>0);
+if(!cts.length)cts.push(['No data',0]);
+rBar('ch-ct',cts,Math.max(...cts.map(x=>x[1]),1),'bg');
+  const sd=[['Closed',cl,'#38A169'],['Open',op,'#3182CE'],['Lost',data.filter(r=>r.status==='Lost').length,'#E53E3E'],['On Hold',data.filter(r=>r.status==='On Hold').length,'#DD6B20']],sm=Math.max(...sd.map(x=>x[1]),1);
+  document.getElementById('ch-st').innerHTML=sd.map(([n,v,col])=>`<div class="mrow"><div class="mname">${n}</div><div class="mright"><div class="mbar"><div class="mbar-fill" style="background:${col};width:${Math.round(v/sm*100)}%"></div></div><div class="mcnt">${v}</div></div></div>`).join('');
+  const rcs=[...new Set(TA.map(r=>r.ric).filter(Boolean))];const rd=rcs.map(r=>[r,data.filter(x=>x.ric===r&&x.status==='Closed').length]).sort((a,b)=>b[1]-a[1]).slice(0,8);rBar('ch-rc',rd,Math.max(...rd.map(x=>x[1]),1),'bn');
+  const ps=[['Available',CAND.filter(c=>c.status==='available').length,'#38A169'],['In Consideration',CAND.filter(c=>c.status==='consideration').length,'#3182CE'],['Placed',CAND.filter(c=>c.status==='placed').length,'#00B4A6'],['Blacklisted',CAND.filter(c=>c.status==='blacklisted').length,'#E53E3E']],pm=Math.max(...ps.map(x=>x[1]),1);
+  document.getElementById('ch-ps').innerHTML=ps.map(([n,v,col])=>`<div class="mrow"><div class="mname">${n}</div><div class="mright"><div class="mbar"><div class="mbar-fill" style="background:${col};width:${Math.round(v/pm*100)}%"></div></div><div class="mcnt">${v}</div></div></div>`).join('');
+  const cats=['Dental','RCM','Sales & Marketing','Business Development','Finance and Accounting','Customer Service','IT and Computer Science','Other'];const cd=cats.map(c=>[c,CAND.filter(x=>x.category===c).length]).filter(x=>x[1]>0);rBar('ch-pc',cd,Math.max(...cd.map(x=>x[1]),1),'bp');
+  // SLA targets (working days): Dental/RCM = 2, Client Facing/Internal = 5
+  const SLA_TARGETS={cvs:{'Dental':2,'RCM':2,'Client Facing':5,'Internal':5},hire:{'Dental':2,'RCM':2,'Client Facing':5,'Internal':5}};
+  function slaClass(val,target){if(!val||val==='—')return'';const v=parseFloat(val);return v<=target?'sla-green':v<=target*1.5?'sla-amber':'sla-red';}
+  function slaTag(val,target){if(!val||val==='—')return'<span style="color:var(--slate);">—</span>';const v=parseFloat(val),cls=slaClass(val,target);const labels={'sla-green':'✓ On SLA','sla-amber':'~ Marginal','sla-red':'✗ Breach'};return`<span class="ready-badge ${cls==='sla-green'?'rb-ready':cls==='sla-amber'?'rb-notready':'rb-offload'}">${labels[cls]||''}</span>`;}
+
+  // SLA chart by job type
+  const slaTypes=['Dental','RCM','Client Facing','Internal'];
+  function renderSlaChart(containerId,field,slaMap){
+    const el=document.getElementById(containerId);if(!el)return;
+    el.innerHTML=slaTypes.map(jt=>{
+      const vals=data.filter(r=>r.jobtype===jt&&r[field]).map(r=>parseFloat(r[field]));
+      const a=vals.length?(vals.reduce((x,y)=>x+y,0)/vals.length):null;
+      const target=slaMap[jt];
+      const cls=a===null?'':slaClass(a,target);
+      const pct=a===null?0:Math.min(Math.round(a/target*100),200);
+      return`<div class="sla-row ${cls}">
+        <div class="sla-label"><strong>${jt}</strong> <span style="font-size:11px;color:var(--slate);">Target: ${target} WD</span></div>
+        <div class="sla-bar"><div class="sla-fill" style="width:${Math.min(pct,100)}%"></div></div>
+        <div class="sla-val">${a===null?'—':a.toFixed(1)+' WD'}</div>
+      </div>`;
+    }).join('');
+  }
+  renderSlaChart('ch-sla-cvs','wdc',SLA_TARGETS.cvs);
+  renderSlaChart('ch-sla-hire','wdh',SLA_TARGETS.hire);
+
+  document.querySelector('#rTbl tbody').innerHTML=rcs.map(r=>{
+    const rd2=data.filter(x=>x.ric===r),rc=rd2.filter(x=>x.status==='Closed').length;
+    const rttsVals=rd2.filter(x=>x.wdc).map(x=>parseFloat(x.wdc));
+    const rtthVals=rd2.filter(x=>x.wdh).map(x=>parseFloat(x.wdh));
+    const rtts=avg(rttsVals),rtth=avg(rtthVals);
+    const rf=rd2.reduce((s,x)=>s+(parseFloat(x.pf)||0),0),rr=rd2.reduce((s,x)=>s+(parseFloat(x.posreq)||0),0);
+    // Dominant job type for this recruiter (to determine their SLA target)
+    const jtCounts=slaTypes.map(jt=>[jt,rd2.filter(x=>x.jobtype===jt).length]).sort((a,b)=>b[1]-a[1]);
+    const domJt=jtCounts[0]?jtCounts[0][0]:'Dental';
+    const cvsTgt=SLA_TARGETS.cvs[domJt]||2,hireTgt=SLA_TARGETS.hire[domJt]||2;
+    return`<tr><td><strong>${r}</strong></td><td>${rd2.length}</td><td>${rc}</td><td>${rtts} days</td><td>${slaTag(rtts,cvsTgt)}</td><td>${rtth} days</td><td>${slaTag(rtth,hireTgt)}</td><td>${rf}</td><td>${rr?Math.round(rf/rr*100)+'%':'—'}</td></tr>`;
+  }).join('')||'<tr><td colspan="9" style="text-align:center;padding:20px;color:#718096;">No data</td></tr>';
+}
+
+// ════ EXPORT ════
+function exportCSV(type){
+  let h,rows;
+  if(type==='ta'){h=['Deal','Client','Country','RIC','Job Type','Sales','Status','Phase','Pos Req','Date Req','Date CVs','WD CVs','Date Intv','Date Hired','WD Hire','CVs Funneled','Screened','Interviewed','Coached','Intv Conducted','Client Intv','Pos Filled','Employed','Calls','Hours','Candidates','Comments'];rows=TA.map(r=>{const cnames=(r.candidateIds||[]).map(cid=>{const c=CAND.find(x=>x.id===cid);return c?cn(c):'';}).filter(Boolean).join('; ');return[r.deal,r.client,r.country,r.ric,r.jobtype,r.sales,r.status,r.phase,r.posreq,r.datereq,r.datecvs,r.wdc,r.dateintv,r.datehired,r.wdh,r.cvf,r.scr,r.intv,r.cch,r.ic,r.ci,r.pf,r.ce,r.nc,r.ih,cnames,r.cmt];});}
+  else if(type==='candidates'){h=['Placement ID','First Name','Last Name','Email','Phone','Category','Level','Region','Status','Dental Training','Foundational','Exec EA','RCM Training','IT Support','Notes'];const trFn=t=>t?'Yes':'';rows=CAND.map(c=>{const tr=c.training||{};return[c.placementId||'',c.firstName,c.lastName,c.email,c.phone,c.category,c.level,c.region,sLabel[c.status]||c.status,trFn(tr.dental),trFn(tr.foundation),trFn(tr.ea),trFn(tr.rcm),trFn(tr.it),c.notes];});}
+  else{h=['Date','Candidate','Candidate Pool ID','Class','Attended','Category','Level','Region','PI Score','PI Ref','Core Comp %','Last Coaching','Readiness','Intv Status','Selected','First Intv','Last Round','Rejection','Action','Comments'];rows=COA.map(r=>[r.date,r.candName||'',r.candId||'',r.class,r.attended,r.category,r.level,r.region,r.piScore,r.piRef,r.coreComp,r.lastcoach,r.readiness,r.intvstatus,r.candsel,r.firstintv,r.lastround,r.rejection,r.action,r.comments]);}
+  const csv=[h,...rows].map(r=>r.map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`ZimWorx_${type}_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('CSV exported');
+}
+
+// ════ INIT ════
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('hDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  ['f-datereq','f-datecvs','f-datehired'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',calcWD);});
+  renderTA();renderPool();renderPS();renderCoachKpis();
+});
+</script>
+</body>
+</html>
